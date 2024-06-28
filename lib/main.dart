@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/info_screen_1.dart';
+import 'package:flutter_mow/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: InfoScreen1(),
+      home: LoginScreen(),
     );
   }
 }

@@ -1,0 +1,45 @@
+import 'package:flutter/material.dart';
+
+class InputBottom extends StatelessWidget {
+  final String label;
+  final Color labelColor;
+  final Color borderColor;
+  final bool obscureText;
+
+  const InputBottom({
+    super.key,
+    required this.label,
+    required this.labelColor,
+    required this.borderColor,
+    required this.obscureText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      cursorColor: Colors.black, //커서 색깔
+      obscureText: obscureText, // 항상보이게 하는가, 안보이게 하는가
+      decoration: InputDecoration(
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: borderColor,
+          ),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: borderColor, // 클릭 시 색상 변경
+          ),
+        ),
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.never, // 라벨이 떠오르지 않게 설정
+        labelStyle: TextStyle(
+          color: labelColor, // 라벨 색상 설정
+          fontFamily: 'SF_Pro',
+          fontSize: 16,
+        ),
+        contentPadding: const EdgeInsets.only(left: 4, right: 4, bottom: 10),
+        isDense: true,
+      ),
+    );
+  }
+}

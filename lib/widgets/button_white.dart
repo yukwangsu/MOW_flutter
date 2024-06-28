@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/info_screen_2.dart';
 
 class ButtonWhite extends StatelessWidget {
   final String text;
   final Color bgcolor;
   final Color textColor;
   final Color borderColor;
+  final Widget nextPage;
 
   const ButtonWhite({
     super.key,
@@ -13,6 +13,7 @@ class ButtonWhite extends StatelessWidget {
     required this.bgcolor,
     required this.textColor,
     required this.borderColor,
+    required this.nextPage,
   });
 
   @override
@@ -22,7 +23,7 @@ class ButtonWhite extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const InfoScreen2(),
+            builder: (context) => nextPage,
           ),
         );
       },
