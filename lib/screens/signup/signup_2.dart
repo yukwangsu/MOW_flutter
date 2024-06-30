@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/signup/signup_3.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
-import 'package:flutter_mow/widgets/button_white.dart';
+import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 import 'package:flutter_mow/widgets/input_text.dart';
 
 class SignUp2 extends StatelessWidget {
-  const SignUp2({super.key});
+  SignUp2({super.key});
+
+  final TextEditingController idController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppbarBack(),
+      appBar: const AppbarBack(),
       resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -21,38 +23,47 @@ class SignUp2 extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
-              TextStart(
+              const TextStart(
                 text: '아이디를',
               ),
-              TextStart(
+              const TextStart(
                 text: '알려주세요!',
               ),
-              SizedBox(
+              const SizedBox(
                 height: 60,
               ),
               InputText(
                 label: 'mow@mow.com',
-                labelColor: Color(0xFFC3C3C3),
-                borderColor: Color(0xFFCCD1DD),
+                labelColor: const Color(0xFFC3C3C3),
+                borderColor: const Color(0xFFCCD1DD),
                 obscureText: false,
+                controller: idController,
               ),
             ],
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27),
+            padding: const EdgeInsets.symmetric(horizontal: 27),
             child: Column(
               children: [
-                ButtonWhite(
+                ButtonMain(
                   text: '다음',
                   bgcolor: Colors.white,
-                  textColor: Color(0xFF6B4D38),
-                  borderColor: Color(0xFF6B4D38),
-                  nextPage: SignUp3(),
+                  textColor: const Color(0xFF6B4D38),
+                  borderColor: const Color(0xFF6B4D38),
+                  onPress: () {
+                    print('send email to ${idController.text}');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignUp3(),
+                      ),
+                    );
+                  },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 68,
                 ),
               ],

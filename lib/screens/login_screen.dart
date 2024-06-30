@@ -1,12 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/info_screen_1.dart';
 import 'package:flutter_mow/screens/signup/signup_1.dart';
-import 'package:flutter_mow/widgets/button_white.dart';
+import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/input_bottom.dart';
+import 'package:flutter_mow/widgets/sub_text.dart';
 import 'package:flutter_svg/svg.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  //아이디, 비밀번호 text controller 선언
+  final TextEditingController idController = TextEditingController();
+
+  final TextEditingController passwordController = TextEditingController();
+
+  late bool isIdWrong = false;
+
+  idCorrect() {
+    setState(() {
+      isIdWrong = false;
+    });
+  }
+
+  idWrong() {
+    setState(() {
+      isIdWrong = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,30 +54,61 @@ class LoginScreen extends StatelessWidget {
                   const SizedBox(
                     height: 30,
                   ),
-                  const InputBottom(
+                  InputBottom(
                     label: '아이디',
-                    labelColor: Color(0xFF6B4D38),
-                    borderColor: Color(0xFF6B4D38),
+                    labelColor: const Color(0xFF6B4D38),
+                    borderColor: const Color(0xFF6B4D38),
                     obscureText: false,
+                    controller: idController,
                   ),
                   const SizedBox(
                     height: 26,
                   ),
-                  const InputBottom(
+                  InputBottom(
                     label: '비밀번호',
-                    labelColor: Color(0xFF6B4D38),
-                    borderColor: Color(0xFF6B4D38),
+                    labelColor: const Color(0xFF6B4D38),
+                    borderColor: const Color(0xFF6B4D38),
                     obscureText: true,
+                    controller: passwordController,
                   ),
                   const SizedBox(
-                    height: 50,
+                    height: 8,
                   ),
-                  const ButtonWhite(
+                  //아이디, 비밀번호 오류시 에러 메세지
+                  Row(
+                    children: [
+                      SubText(
+                        text: '아이디 혹은 비밀번호가 맞지 않습니다.',
+                        textColor:
+                            isIdWrong ? const Color(0xFFFF2E2E) : Colors.white,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  //로그인 버튼
+                  ButtonMain(
                     text: '로그인',
-                    bgcolor: Color(0xFF6B4D38),
+                    bgcolor: const Color(0xFF6B4D38),
                     textColor: Colors.white,
-                    borderColor: Color(0xFF6B4D38),
-                    nextPage: InfoScreen1(),
+                    borderColor: const Color(0xFF6B4D38),
+                    onPress: () {
+                      print('login id: ${idController.text}');
+                      print('login pw: ${passwordController.text}');
+                      // 아이디, 비밀번호 확인
+                      if (idController.text == 'ididid') {
+                        idCorrect();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const InfoScreen1(),
+                          ),
+                        );
+                      } else {
+                        idWrong();
+                      }
+                    },
                   ),
                   const SizedBox(
                     height: 8,

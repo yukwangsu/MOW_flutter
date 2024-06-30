@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/signup/signup_2.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
+import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/button_white.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
@@ -9,15 +10,15 @@ class SignUp1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppbarBack(),
+      appBar: const AppbarBack(),
       resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
@@ -35,17 +36,24 @@ class SignUp1 extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27),
+            padding: const EdgeInsets.symmetric(horizontal: 27),
             child: Column(
               children: [
-                ButtonWhite(
+                ButtonMain(
                   text: '다음',
                   bgcolor: Colors.white,
-                  textColor: Color(0xFF6B4D38),
-                  borderColor: Color(0xFF6B4D38),
-                  nextPage: SignUp2(),
+                  textColor: const Color(0xFF6B4D38),
+                  borderColor: const Color(0xFF6B4D38),
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignUp2(),
+                      ),
+                    );
+                  },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 68,
                 ),
               ],

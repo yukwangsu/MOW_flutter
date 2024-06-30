@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/info_screen_1.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
+import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/button_white.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 import 'package:flutter_mow/widgets/input_text.dart';
 
 class InfoScreen2 extends StatelessWidget {
-  const InfoScreen2({super.key});
+  InfoScreen2({super.key});
+
+  final TextEditingController nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppbarBack(),
+      appBar: const AppbarBack(),
       resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -21,38 +24,47 @@ class InfoScreen2 extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
-              TextStart(
+              const TextStart(
                 text: 'MOW',
               ),
-              TextStart(
+              const TextStart(
                 text: '닉네임은 무엇인가요 ?',
               ),
-              SizedBox(
+              const SizedBox(
                 height: 60,
               ),
               InputText(
                 label: '닉네임을 입력해주세요',
-                labelColor: Color(0xFFC3C3C3),
-                borderColor: Color(0xFFCCD1DD),
+                labelColor: const Color(0xFFC3C3C3),
+                borderColor: const Color(0xFFCCD1DD),
                 obscureText: false,
+                controller: nameController,
               ),
             ],
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27),
+            padding: const EdgeInsets.symmetric(horizontal: 27),
             child: Column(
               children: [
-                ButtonWhite(
+                ButtonMain(
                   text: '다음',
                   bgcolor: Colors.white,
-                  textColor: Color(0xFF6B4D38),
-                  borderColor: Color(0xFF6B4D38),
-                  nextPage: InfoScreen1(),
+                  textColor: const Color(0xFF6B4D38),
+                  borderColor: const Color(0xFF6B4D38),
+                  onPress: () {
+                    print('your name is ${nameController.text}');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const InfoScreen1(),
+                      ),
+                    );
+                  },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 68,
                 ),
               ],

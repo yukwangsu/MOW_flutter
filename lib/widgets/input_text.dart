@@ -5,6 +5,7 @@ class InputText extends StatelessWidget {
   final Color labelColor;
   final Color borderColor;
   final bool obscureText;
+  final TextEditingController controller; //입력값 controller
 
   const InputText({
     super.key,
@@ -12,6 +13,7 @@ class InputText extends StatelessWidget {
     required this.labelColor,
     required this.borderColor,
     required this.obscureText,
+    required this.controller,
   });
 
   @override
@@ -19,6 +21,7 @@ class InputText extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 27),
       child: TextField(
+        controller: controller, //입력값 controller
         cursorColor: Colors.black, // 커서 색깔
         obscureText: obscureText, // 항상 보이게 하는가, 안 보이게 하는가
         decoration: InputDecoration(

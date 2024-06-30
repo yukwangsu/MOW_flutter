@@ -37,18 +37,18 @@ class InfoScreen1 extends StatelessWidget {
               Image.asset('assets/images/cat_head.png'),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 27),
             child: Column(
               children: [
                 ButtonWhite(
                   text: '다음',
                   bgcolor: Colors.white,
-                  textColor: Color(0xFF6B4D38),
-                  borderColor: Color(0xFF6B4D38),
+                  textColor: const Color(0xFF6B4D38),
+                  borderColor: const Color(0xFF6B4D38),
                   nextPage: InfoScreen2(),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 68,
                 ),
               ],
