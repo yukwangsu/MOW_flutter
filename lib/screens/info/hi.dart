@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/signup/signup_3.dart';
+import 'package:flutter_mow/screens/info/set_name.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
-import 'package:flutter_mow/widgets/input_text.dart';
 
-class SignUp2 extends StatelessWidget {
-  SignUp2({super.key});
-
-  final TextEditingController idController = TextEditingController();
+class InfoScreen1 extends StatelessWidget {
+  const InfoScreen1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +17,24 @@ class SignUp2 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
+              SizedBox(
                 height: 25,
               ),
-              const TextStart(
-                text: '아이디를',
+              TextStart(
+                text: '만나서 반가워요',
               ),
-              const TextStart(
-                text: '알려주세요!',
+              TextStart(
+                text: '몇 가지 궁금한 게 있어요 !',
               ),
-              const SizedBox(
-                height: 60,
-              ),
-              InputText(
-                label: 'mow@mow.com',
-                labelColor: const Color(0xFFC3C3C3),
-                borderColor: const Color(0xFFCCD1DD),
-                obscureText: false,
-                controller: idController,
-              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Image.asset('assets/images/cat_head.png'),
             ],
           ),
           Padding(
@@ -54,11 +47,10 @@ class SignUp2 extends StatelessWidget {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    print('send email to ${idController.text}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SignUp3(),
+                        builder: (context) => InfoScreen2(),
                       ),
                     );
                   },

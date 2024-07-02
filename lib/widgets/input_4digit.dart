@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class Input4digit extends StatefulWidget {
+  final List<TextEditingController> digitControllers; //입력값 controller
+
   const Input4digit({
     super.key,
+    required this.digitControllers,
   });
 
   @override
@@ -13,23 +16,17 @@ class Input4digit extends StatefulWidget {
 class _Input4digitState extends State<Input4digit> {
   //숫자 하나 입력하면 자동으로 다음 칸으로 이동
   late List<FocusNode> _focusNodes;
-  late List<TextEditingController> _controllers;
 
   @override
   void initState() {
     super.initState();
     _focusNodes = List<FocusNode>.generate(4, (_) => FocusNode());
-    _controllers =
-        List<TextEditingController>.generate(4, (_) => TextEditingController());
   }
 
   @override
   void dispose() {
     for (var node in _focusNodes) {
       node.dispose();
-    }
-    for (var controller in _controllers) {
-      controller.dispose();
     }
     super.dispose();
   }
@@ -55,7 +52,7 @@ class _Input4digitState extends State<Input4digit> {
                 LengthLimitingTextInputFormatter(1), // 입력 길이 제한
               ],
               focusNode: _focusNodes[index],
-              controller: _controllers[index],
+              controller: widget.digitControllers[index], //widget 필수
               onChanged: (value) {
                 if (value.length == 1 && index < _focusNodes.length - 1) {
                   FocusScope.of(context).requestFocus(_focusNodes[index + 1]);

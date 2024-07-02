@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/info_screen_1.dart';
-import 'package:flutter_mow/screens/signup/signup_1.dart';
+import 'package:flutter_mow/screens/find_passwd/enter_email.dart';
+import 'package:flutter_mow/screens/info/hi.dart';
+import 'package:flutter_mow/screens/signup/agree.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/input_bottom.dart';
 import 'package:flutter_mow/widgets/sub_text.dart';
@@ -113,12 +114,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 8,
                   ),
+                  //추후 컴포넌트화 작업 필요
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       //비밀번호 찾기 버튼
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EnterEmail(),
+                            ),
+                          );
+                        },
                         child: const Text(
                           '비밀번호 찾기',
                           style: TextStyle(
@@ -131,6 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         width: 5,
                       ),
+                      //경계선
                       Container(
                         width: 1,
                         height: 20,

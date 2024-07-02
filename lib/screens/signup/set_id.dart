@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/info_screen_2.dart';
+import 'package:flutter_mow/screens/signup/enter_code.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
-import 'package:flutter_mow/widgets/button_white.dart';
+import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
+import 'package:flutter_mow/widgets/input_text.dart';
 
-class InfoScreen1 extends StatelessWidget {
-  const InfoScreen1({super.key});
+class SignUp2 extends StatelessWidget {
+  SignUp2({super.key});
+
+  final TextEditingController idController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -17,36 +20,48 @@ class InfoScreen1 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
-              TextStart(
-                text: '만나서 반가워요',
+              const TextStart(
+                text: '아이디를',
               ),
-              TextStart(
-                text: '몇 가지 궁금한 게 있어요 !',
+              const TextStart(
+                text: '알려주세요!',
               ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Image.asset('assets/images/cat_head.png'),
+              const SizedBox(
+                height: 60,
+              ),
+              InputText(
+                label: 'mow@mow.com',
+                labelColor: const Color(0xFFC3C3C3),
+                borderColor: const Color(0xFFCCD1DD),
+                obscureText: false,
+                controller: idController,
+              ),
             ],
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 27),
             child: Column(
               children: [
-                ButtonWhite(
+                ButtonMain(
                   text: '다음',
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  nextPage: InfoScreen2(),
+                  onPress: () {
+                    print('send email to ${idController.text}');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignUp3(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(
                   height: 68,

@@ -7,6 +7,8 @@ class SetPasswd extends StatefulWidget {
   final Color labelColor;
   final Color borderColor;
   final bool obscureText;
+  final TextEditingController controller; //입력값 controller
+  final TextEditingController controllerSame; //입력값 controller
 
   const SetPasswd({
     super.key,
@@ -14,6 +16,8 @@ class SetPasswd extends StatefulWidget {
     required this.labelColor,
     required this.borderColor,
     required this.obscureText,
+    required this.controller, //입력값 controller
+    required this.controllerSame, //입력값 controller
   });
 
   @override
@@ -64,6 +68,12 @@ class _SetPasswdState extends State<SetPasswd> {
     });
   }
 
+  wrong() {
+    setState(() {
+      isSame = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -71,6 +81,8 @@ class _SetPasswdState extends State<SetPasswd> {
       child: Column(
         children: [
           TextField(
+            //StatefulWidget 에서는
+            controller: widget.controller, //입력값 controller
             cursorColor: Colors.black, // 커서 색깔
             obscureText: widget.obscureText, // 항상 보이게 하는가, 안 보이게 하는가
             onChanged: (value) {
@@ -157,11 +169,14 @@ class _SetPasswdState extends State<SetPasswd> {
               height: 32,
             ),
             TextField(
+              controller: widget.controllerSame,
               cursorColor: Colors.black, // 커서 색깔
               obscureText: widget.obscureText, // 항상 보이게 하는가, 안 보이게 하는가
               onChanged: (value) {
                 if (value == val1) {
                   same(); //괄호 필수
+                } else {
+                  wrong();
                 }
               },
               decoration: InputDecoration(

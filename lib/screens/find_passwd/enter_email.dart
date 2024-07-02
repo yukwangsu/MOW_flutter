@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/signup/signup_2.dart';
+import 'package:flutter_mow/screens/find_passwd/enter_code.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
-import 'package:flutter_mow/widgets/button_white.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
+import 'package:flutter_mow/widgets/input_text.dart';
 
-class SignUp1 extends StatelessWidget {
-  const SignUp1({super.key});
+class EnterEmail extends StatelessWidget {
+  EnterEmail({super.key});
+
+  final TextEditingController idController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +20,27 @@ class SignUp1 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
-              TextStart(
-                text: 'MOW 서비스 이용약관에',
+              const TextStart(
+                text: '가입시 사용한',
               ),
-              TextStart(
-                text: '동의해주세요.',
+              const TextStart(
+                text: '이메일을 입력해주세요.',
               ),
-              SizedBox(
+              const SizedBox(
                 height: 60,
+              ),
+              InputText(
+                label: '이메일 입력',
+                labelColor: const Color(0xFFC3C3C3),
+                borderColor: const Color(0xFFCCD1DD),
+                obscureText: false,
+                controller: idController,
               ),
             ],
           ),
@@ -40,15 +49,16 @@ class SignUp1 extends StatelessWidget {
             child: Column(
               children: [
                 ButtonMain(
-                  text: '다음',
+                  text: '인증코드 받기',
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
+                    print('send email to ${idController.text}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SignUp2(),
+                        builder: (context) => const EnterCode(),
                       ),
                     );
                   },

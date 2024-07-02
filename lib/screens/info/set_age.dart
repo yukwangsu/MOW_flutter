@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/info_screen_1.dart';
+import 'package:flutter_mow/screens/info/set_sex.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
-import 'package:flutter_mow/widgets/button_white.dart';
+import 'package:flutter_mow/widgets/input_digit.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
-import 'package:flutter_mow/widgets/input_text.dart';
 
-class InfoScreen2 extends StatelessWidget {
-  InfoScreen2({super.key});
+class SetAge extends StatelessWidget {
+  SetAge({super.key});
 
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +27,20 @@ class InfoScreen2 extends StatelessWidget {
                 height: 25,
               ),
               const TextStart(
-                text: 'MOW',
+                text: '000님의',
               ),
               const TextStart(
-                text: '닉네임은 무엇인가요 ?',
+                text: '나이가 궁금해요 !',
               ),
               const SizedBox(
                 height: 60,
               ),
-              InputText(
-                label: '닉네임을 입력해주세요',
+              InputDigit(
+                label: '나이를 입력해주세요',
                 labelColor: const Color(0xFFC3C3C3),
                 borderColor: const Color(0xFFCCD1DD),
                 obscureText: false,
-                controller: nameController,
+                controller: ageController,
               ),
             ],
           ),
@@ -55,11 +54,11 @@ class InfoScreen2 extends StatelessWidget {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    print('your name is ${nameController.text}');
+                    print('your age is ${ageController.text}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const InfoScreen1(),
+                        builder: (context) => SetSex(),
                       ),
                     );
                   },
