@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/info/hi.dart';
+import 'package:flutter_mow/screens/info/set_job.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
@@ -13,8 +13,6 @@ class SetSex extends StatefulWidget {
 }
 
 class _SetSexState extends State<SetSex> {
-  final TextEditingController ageController = TextEditingController();
-
   late int sex = 0;
 
   selectMan() {
@@ -127,12 +125,21 @@ class _SetSexState extends State<SetSex> {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const InfoScreen1(),
-                      ),
-                    );
+                    if (sex > 0) {
+                      if (sex == 1) {
+                        print('남자');
+                      } else if (sex == 2) {
+                        print('여자');
+                      } else {
+                        print('선택안함');
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SetJob(),
+                        ),
+                      );
+                    }
                   },
                 ),
                 const SizedBox(
