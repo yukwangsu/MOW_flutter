@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/info/set_mbti.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
-import 'package:flutter_mow/widgets/drop_down.dart';
-import 'package:flutter_mow/widgets/sub_text.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
-class SetJob extends StatelessWidget {
-  SetJob({super.key});
-
-  final TextEditingController jobController = TextEditingController();
+class Last extends StatelessWidget {
+  const Last({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,34 +17,24 @@ class SetJob extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
+              SizedBox(
                 height: 25,
               ),
-              const TextStart(
-                text: '현재 어떤 일을 하고 있나요?',
+              TextStart(
+                text: '이제 우리만의',
               ),
-              const SizedBox(
-                height: 4,
+              TextStart(
+                text: '공간을 찾으러 가봐요 !',
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 27),
-                child: SubText(
-                  text: '추천 컨텐츠를 위해서만 사용할 정보에요',
-                  textColor: Color(0xFFC3C3C3),
-                ),
-              ),
-              const SizedBox(
-                height: 60,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 27),
-                child: DropDown(
-                  controller: jobController,
-                ),
-              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Image.asset('assets/images/cat_tail.png'),
             ],
           ),
           Padding(
@@ -56,12 +42,11 @@ class SetJob extends StatelessWidget {
             child: Column(
               children: [
                 ButtonMain(
-                  text: '다음',
-                  bgcolor: Colors.white,
-                  textColor: const Color(0xFF6B4D38),
+                  text: '출발',
+                  bgcolor: const Color(0xFF6B4D38),
+                  textColor: Colors.white,
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    print('your job is ${jobController.text}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class SelectButton extends StatelessWidget {
+class SelectButtonFix extends StatelessWidget {
   final double height;
-  final double padding;
+  final double width;
   final Color bgColor;
   final double radius;
   final String text;
@@ -11,10 +11,10 @@ class SelectButton extends StatelessWidget {
   final double? borderWidth; // 테두리 두께
   final Function onPress;
 
-  const SelectButton({
+  const SelectButtonFix({
     super.key,
     required this.height,
-    required this.padding,
+    required this.width,
     required this.bgColor,
     required this.radius,
     required this.text,
@@ -31,10 +31,7 @@ class SelectButton extends StatelessWidget {
       child: TextButton(
         onPressed: () => onPress(), // 함수를 호출하지 않고 참조를 전달
         style: TextButton.styleFrom(
-          padding: EdgeInsets.symmetric(
-            horizontal: padding,
-          ), // 텍스트와 버튼 사이 거리
-          minimumSize: Size(0, height), // 최소 높이 설정
+          minimumSize: Size(width, height), // 최소 크기 설정
           backgroundColor: bgColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius), // 테두리 반경 설정

@@ -3,7 +3,12 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DropDown extends StatefulWidget {
-  const DropDown({super.key});
+  final TextEditingController controller; //입력값 controller
+
+  const DropDown({
+    super.key,
+    required this.controller,
+  });
 
   @override
   _DropDownState createState() => _DropDownState();
@@ -17,6 +22,7 @@ class _DropDownState extends State<DropDown> {
   @override
   void initState() {
     super.initState();
+    widget.controller.text = _selectedValue;
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         // Dropdown gained focus
@@ -57,8 +63,8 @@ class _DropDownState extends State<DropDown> {
             value: _selectedValue,
             icon: SvgPicture.asset(
               _isExpanded
-                  ? 'assets/icons/dropdown_up.svg' // Icon when expanded
-                  : 'assets/icons/dropdown_up.svg', // Icon when collapsed
+                  ? 'assets/icons/dropdown_down.svg'
+                  : 'assets/icons/dropdown_up.svg', // 반대?
             ),
             isExpanded: true,
             buttonPadding: const EdgeInsets.only(left: 4.0, right: 16.0),
@@ -81,13 +87,13 @@ class _DropDownState extends State<DropDown> {
               fontFamily: 'SF_Pro',
               color: Colors.black, // Text color in the dropdown menu
             ),
+            //직접입력 수정 필요
             items: <String>['대학생', '직장인', '디자이너', '개발자', '직접입력']
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 11.0), // 22px total height spacing
+                  padding: const EdgeInsets.symmetric(vertical: 0.0), // 패딩?
                   child: Text(value),
                 ),
               );
@@ -95,6 +101,7 @@ class _DropDownState extends State<DropDown> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedValue = newValue!;
+                widget.controller.text = _selectedValue;
               });
             },
           ),

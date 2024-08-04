@@ -1,233 +1,142 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_mow/screens/info/set_job.dart';
-// import 'package:flutter_mow/widgets/appbar_back.dart';
-// import 'package:flutter_mow/widgets/button_main.dart';
-// import 'package:flutter_mow/widgets/select_button.dart';
-// import 'package:flutter_mow/widgets/text_start.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mow/screens/info/last.dart';
+import 'package:flutter_mow/widgets/appbar_back.dart';
+import 'package:flutter_mow/widgets/button_main.dart';
+import 'package:flutter_mow/widgets/select_button_fix.dart';
+import 'package:flutter_mow/widgets/sub_text.dart';
+import 'package:flutter_mow/widgets/text_start.dart';
 
-// class SetMbti extends StatefulWidget {
-//   const SetMbti({super.key});
+class SetMbti extends StatefulWidget {
+  const SetMbti({super.key});
 
-//   @override
-//   State<SetMbti> createState() => _SetMbtiState();
-// }
+  @override
+  State<SetMbti> createState() => _SetMbtiState();
+}
 
-// class _SetMbtiState extends State<SetMbti> {
-//   late String mbti = '';
+class _SetMbtiState extends State<SetMbti> {
+  late String mbti = '';
 
-//   setINTJ() {
-//     setState(() {
-//       mbti = 'INTJ';
-//     });
-//   }
+  void setMbti(String value) {
+    setState(() {
+      mbti = value;
+    });
+  }
 
-//   setINTP() {
-//     setState(() {
-//       mbti = 'INTP';
-//     });
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: const AppbarBack(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 25,
+              ),
+              TextStart(
+                text: 'MBTI가 궁금해요!',
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 27),
+                child: SubText(
+                  text: '추천 컨텐츠를 위해서만 사용할 정보에요',
+                  textColor: Color(0xFFC3C3C3),
+                ),
+              ),
+              SizedBox(height: 60),
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 27),
+              child: Column(
+                children: [
+                  buildRow(['INTJ', 'INTP']),
+                  const SizedBox(height: 40),
+                  buildRow(['ENTJ', 'ENTP']),
+                  const SizedBox(height: 40),
+                  buildRow(['INFJ', 'INFP']),
+                  const SizedBox(height: 40),
+                  buildRow(['ENFJ', 'ENFP']),
+                  const SizedBox(height: 40),
+                  buildRow(['ISTJ', 'ISFJ']),
+                  const SizedBox(height: 40),
+                  buildRow(['ESTJ', 'ESFJ']),
+                  const SizedBox(height: 40),
+                  buildRow(['ISTP', 'ISFP']),
+                  const SizedBox(height: 40),
+                  buildRow(['ESTP', 'ESFP']),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 27),
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 12,
+                ),
+                ButtonMain(
+                  text: '다음',
+                  bgcolor: Colors.white,
+                  textColor: const Color(0xFF6B4D38),
+                  borderColor: const Color(0xFF6B4D38),
+                  onPress: () {
+                    if (mbti.isNotEmpty) {
+                      print('your mbti is $mbti');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Last(),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 68,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-//   setENTJ() {
-//     setState(() {
-//       mbti = 'ENTJ';
-//     });
-//   }
-
-//   setENTP() {
-//     setState(() {
-//       mbti = 'ENTP';
-//     });
-//   }
-  
-//   set() {
-//     setState(() {
-//       mbti = 'INFJ';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = 'INFP';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = 'ENFJ';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = 'ENFP';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = 'ISTJ';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = 'ISFJ';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = 'ESTJ';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = 'ESFJ';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = '';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = '';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = '';
-//     });
-//   }
-
-//   set() {
-//     setState(() {
-//       mbti = '';
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: const AppbarBack(),
-//       resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
-//       body: Column(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               const SizedBox(
-//                 height: 25,
-//               ),
-//               const TextStart(
-//                 text: '000님의',
-//               ),
-//               const TextStart(
-//                 text: '성별이 궁금해요 !',
-//               ),
-//               const SizedBox(
-//                 height: 60,
-//               ),
-//               Padding(
-//                 padding: const EdgeInsets.symmetric(horizontal: 27),
-//                 child: Row(
-//                   children: [
-//                     SelectButton(
-//                       height: 49,
-//                       padding: 26,
-//                       bgColor: sex == 1
-//                           ? const Color(0xFF6B4D38)
-//                           : const Color(0xFFFFFCF8),
-//                       radius: 1000,
-//                       text: '남자',
-//                       textColor:
-//                           sex == 1 ? Colors.white : const Color(0xFF6B4D38),
-//                       onPress: () {
-//                         selectMan();
-//                       },
-//                     ),
-//                     const SizedBox(
-//                       width: 6,
-//                     ),
-//                     SelectButton(
-//                       height: 49,
-//                       padding: 26,
-//                       bgColor: sex == 2
-//                           ? const Color(0xFF6B4D38)
-//                           : const Color(0xFFFFFCF8),
-//                       radius: 1000,
-//                       text: '여자',
-//                       textColor:
-//                           sex == 2 ? Colors.white : const Color(0xFF6B4D38),
-//                       onPress: () {
-//                         selectWoman();
-//                       },
-//                     ),
-//                     const SizedBox(
-//                       width: 6,
-//                     ),
-//                     SelectButton(
-//                       height: 49,
-//                       padding: 26,
-//                       bgColor: sex == 3
-//                           ? const Color(0xFF6B4D38)
-//                           : const Color(0xFFFFFCF8),
-//                       radius: 1000,
-//                       text: '선택안함',
-//                       textColor:
-//                           sex == 3 ? Colors.white : const Color(0xFF6B4D38),
-//                       onPress: () {
-//                         selectNone();
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 27),
-//             child: Column(
-//               children: [
-//                 ButtonMain(
-//                   text: '다음',
-//                   bgcolor: Colors.white,
-//                   textColor: const Color(0xFF6B4D38),
-//                   borderColor: const Color(0xFF6B4D38),
-//                   onPress: () {
-//                     if (sex > 0) {
-//                       if (sex == 1) {
-//                         print('남자');
-//                       } else if (sex == 2) {
-//                         print('여자');
-//                       } else {
-//                         print('선택안함');
-//                       }
-//                       Navigator.push(
-//                         context,
-//                         MaterialPageRoute(
-//                           builder: (context) => SetJob(),
-//                         ),
-//                       );
-//                     }
-//                   },
-//                 ),
-//                 const SizedBox(
-//                   height: 68,
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+  Widget buildRow(List<String> mbtiList) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: mbtiList.map((mbtiType) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0), //16 * 2 = 32
+          child: SelectButtonFix(
+            height: 45,
+            width: 120,
+            bgColor: mbti == mbtiType ? const Color(0xFF6B4D38) : Colors.white,
+            radius: 10,
+            text: mbtiType,
+            textColor:
+                mbti == mbtiType ? Colors.white : const Color(0xFF6B4D38),
+            borderColor: mbti == mbtiType
+                ? const Color(0xFF6B4D38)
+                : const Color(0xFFAD7541),
+            borderWidth: 1.0,
+            onPress: () {
+              setMbti(mbtiType);
+            },
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
