@@ -7,7 +7,20 @@ import 'package:flutter_mow/widgets/sub_text.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
 class SetJob extends StatelessWidget {
-  SetJob({super.key});
+  final String email;
+  final String passwd;
+  final String name;
+  final int? age;
+  final String sex;
+
+  SetJob({
+    super.key,
+    required this.email,
+    required this.passwd,
+    required this.name,
+    required this.age,
+    required this.sex,
+  });
 
   final TextEditingController jobController = TextEditingController();
 
@@ -61,11 +74,23 @@ class SetJob extends StatelessWidget {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    print('your job is ${jobController.text}');
+                    print('''info[email: $email, 
+                          passwd: $passwd, 
+                          name: $name, 
+                          age: $age, 
+                          sex: $sex,
+                          job: ${jobController.text}]''');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SetMbti(),
+                        builder: (context) => SetMbti(
+                          email: email,
+                          passwd: passwd,
+                          name: name,
+                          age: age,
+                          sex: sex,
+                          job: jobController.text,
+                        ),
                       ),
                     );
                   },

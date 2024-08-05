@@ -5,8 +5,15 @@ import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 import 'package:flutter_mow/widgets/input_text.dart';
 
-class InfoScreen2 extends StatelessWidget {
-  InfoScreen2({super.key});
+class InfoSetName extends StatelessWidget {
+  final String email;
+  final String passwd;
+
+  InfoSetName({
+    super.key,
+    required this.email,
+    required this.passwd,
+  });
 
   final TextEditingController nameController = TextEditingController();
 
@@ -54,11 +61,16 @@ class InfoScreen2 extends StatelessWidget {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    print('your name is ${nameController.text}');
+                    print(
+                        'info[email: $email, passwd: $passwd, name: ${nameController.text}]');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SetAge(),
+                        builder: (context) => SetAge(
+                          email: email,
+                          passwd: passwd,
+                          name: nameController.text,
+                        ),
                       ),
                     );
                   },

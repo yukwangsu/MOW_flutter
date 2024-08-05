@@ -4,8 +4,15 @@ import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
-class InfoScreen1 extends StatelessWidget {
-  const InfoScreen1({super.key});
+class InfoHi extends StatelessWidget {
+  final String email;
+  final String passwd;
+
+  const InfoHi({
+    super.key,
+    required this.email,
+    required this.passwd,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +57,10 @@ class InfoScreen1 extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => InfoScreen2(),
+                        builder: (context) => InfoSetName(
+                          email: email,
+                          passwd: passwd,
+                        ),
                       ),
                     );
                   },

@@ -5,8 +5,13 @@ import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/set_passwd.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
-class SignUp4 extends StatelessWidget {
-  SignUp4({super.key});
+class SignUpSetPw extends StatelessWidget {
+  final String email;
+
+  SignUpSetPw({
+    super.key,
+    required this.email,
+  });
 
   final TextEditingController passwdController = TextEditingController();
   final TextEditingController sameController = TextEditingController();
@@ -56,13 +61,16 @@ class SignUp4 extends StatelessWidget {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    print('your passwd: ${passwdController.text}');
-                    print('your passwd check: ${sameController.text}');
                     if (passwdController.text == sameController.text) {
+                      print('your email: $email');
+                      print('your passwd: ${passwdController.text}');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const InfoScreen1(),
+                          builder: (context) => InfoHi(
+                            email: email,
+                            passwd: passwdController.text,
+                          ),
                         ),
                       );
                     }

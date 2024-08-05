@@ -6,7 +6,16 @@ import 'package:flutter_mow/widgets/input_digit.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
 class SetAge extends StatelessWidget {
-  SetAge({super.key});
+  final String email;
+  final String passwd;
+  final String name;
+
+  SetAge({
+    super.key,
+    required this.email,
+    required this.passwd,
+    required this.name,
+  });
 
   final TextEditingController ageController = TextEditingController();
 
@@ -54,11 +63,17 @@ class SetAge extends StatelessWidget {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    print('your age is ${ageController.text}');
+                    print(
+                        'info[email: $email, passwd: $passwd, name: $name, age: ${ageController.text}]');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SetSex(),
+                        builder: (context) => SetSex(
+                          email: email,
+                          passwd: passwd,
+                          name: name,
+                          age: int.tryParse(ageController.text),
+                        ),
                       ),
                     );
                   },

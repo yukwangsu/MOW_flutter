@@ -7,7 +7,22 @@ import 'package:flutter_mow/widgets/sub_text.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
 class SetMbti extends StatefulWidget {
-  const SetMbti({super.key});
+  final String email;
+  final String passwd;
+  final String name;
+  final int? age;
+  final String sex;
+  final String job;
+
+  const SetMbti({
+    super.key,
+    required this.email,
+    required this.passwd,
+    required this.name,
+    required this.age,
+    required this.sex,
+    required this.job,
+  });
 
   @override
   State<SetMbti> createState() => _SetMbtiState();
@@ -92,11 +107,25 @@ class _SetMbtiState extends State<SetMbti> {
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
                     if (mbti.isNotEmpty) {
-                      print('your mbti is $mbti');
+                      print('''info[email: ${widget.email}, 
+                          passwd: ${widget.passwd}, 
+                          name: ${widget.name}, 
+                          age: ${widget.age}, 
+                          sex: ${widget.sex},
+                          job: ${widget.job},
+                          mbti: $mbti]''');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Last(),
+                          builder: (context) => Last(
+                            email: widget.email,
+                            passwd: widget.passwd,
+                            name: widget.name,
+                            age: widget.age,
+                            sex: widget.sex,
+                            job: widget.job,
+                            mbti: mbti,
+                          ),
                         ),
                       );
                     }

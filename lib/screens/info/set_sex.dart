@@ -6,30 +6,41 @@ import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
 class SetSex extends StatefulWidget {
-  const SetSex({super.key});
+  final String email;
+  final String passwd;
+  final String name;
+  final int? age;
+
+  const SetSex({
+    super.key,
+    required this.email,
+    required this.passwd,
+    required this.name,
+    required this.age,
+  });
 
   @override
   State<SetSex> createState() => _SetSexState();
 }
 
 class _SetSexState extends State<SetSex> {
-  late int sex = 0;
+  late String sex = '';
 
   selectMan() {
     setState(() {
-      sex = 1;
+      sex = '남자';
     });
   }
 
   selectWoman() {
     setState(() {
-      sex = 2;
+      sex = '여자';
     });
   }
 
   selectNone() {
     setState(() {
-      sex = 3;
+      sex = '선택안함';
     });
   }
 
@@ -65,13 +76,13 @@ class _SetSexState extends State<SetSex> {
                     SelectButton(
                       height: 49,
                       padding: 26,
-                      bgColor: sex == 1
+                      bgColor: sex == '남자'
                           ? const Color(0xFF6B4D38)
                           : const Color(0xFFFFFCF8),
                       radius: 1000,
                       text: '남자',
                       textColor:
-                          sex == 1 ? Colors.white : const Color(0xFF6B4D38),
+                          sex == '남자' ? Colors.white : const Color(0xFF6B4D38),
                       onPress: () {
                         selectMan();
                       },
@@ -82,13 +93,13 @@ class _SetSexState extends State<SetSex> {
                     SelectButton(
                       height: 49,
                       padding: 26,
-                      bgColor: sex == 2
+                      bgColor: sex == '여자'
                           ? const Color(0xFF6B4D38)
                           : const Color(0xFFFFFCF8),
                       radius: 1000,
                       text: '여자',
                       textColor:
-                          sex == 2 ? Colors.white : const Color(0xFF6B4D38),
+                          sex == '여자' ? Colors.white : const Color(0xFF6B4D38),
                       onPress: () {
                         selectWoman();
                       },
@@ -99,13 +110,14 @@ class _SetSexState extends State<SetSex> {
                     SelectButton(
                       height: 49,
                       padding: 26,
-                      bgColor: sex == 3
+                      bgColor: sex == '선택안함'
                           ? const Color(0xFF6B4D38)
                           : const Color(0xFFFFFCF8),
                       radius: 1000,
                       text: '선택안함',
-                      textColor:
-                          sex == 3 ? Colors.white : const Color(0xFF6B4D38),
+                      textColor: sex == '선택안함'
+                          ? Colors.white
+                          : const Color(0xFF6B4D38),
                       onPress: () {
                         selectNone();
                       },
@@ -125,18 +137,22 @@ class _SetSexState extends State<SetSex> {
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    if (sex > 0) {
-                      if (sex == 1) {
-                        print('남자');
-                      } else if (sex == 2) {
-                        print('여자');
-                      } else {
-                        print('선택안함');
-                      }
+                    if (sex.isNotEmpty) {
+                      print('''info[email: ${widget.email}, 
+                          passwd: ${widget.passwd}, 
+                          name: ${widget.name}, 
+                          age: ${widget.age}, 
+                          sex: $sex]''');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SetJob(),
+                          builder: (context) => SetJob(
+                            email: widget.email,
+                            passwd: widget.passwd,
+                            name: widget.name,
+                            age: widget.age,
+                            sex: sex,
+                          ),
                         ),
                       );
                     }

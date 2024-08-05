@@ -5,8 +5,8 @@ import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 import 'package:flutter_mow/widgets/input_text.dart';
 
-class SignUp2 extends StatelessWidget {
-  SignUp2({super.key});
+class SignUpSetId extends StatelessWidget {
+  SignUpSetId({super.key});
 
   final TextEditingController idController = TextEditingController();
 
@@ -58,7 +58,9 @@ class SignUp2 extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SignUp3(),
+                        builder: (context) => SignUpEnterCode(
+                          email: idController.text,
+                        ),
                       ),
                     );
                   },

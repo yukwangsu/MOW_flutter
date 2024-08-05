@@ -7,14 +7,19 @@ import 'package:flutter_mow/widgets/text_start.dart';
 import 'package:flutter_mow/widgets/input_4digit.dart';
 import 'package:flutter_svg/svg.dart';
 
-class SignUp3 extends StatefulWidget {
-  const SignUp3({super.key});
+class SignUpEnterCode extends StatefulWidget {
+  final String email;
+
+  const SignUpEnterCode({
+    super.key,
+    required this.email,
+  });
 
   @override
-  State<SignUp3> createState() => _SignUp3State();
+  State<SignUpEnterCode> createState() => _SignUpEnterCode();
 }
 
-class _SignUp3State extends State<SignUp3> {
+class _SignUpEnterCode extends State<SignUpEnterCode> {
   final List<TextEditingController> digitControllers =
       List<TextEditingController>.generate(4, (_) => TextEditingController());
 
@@ -103,10 +108,14 @@ class _SignUp3State extends State<SignUp3> {
                     //인증코드가 맞는지 확인
                     if (code == '1234') {
                       codeCorrect();
+                      print('code is $code');
+                      print('info[email: ${widget.email}]');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SignUp4(),
+                          builder: (context) => SignUpSetPw(
+                            email: widget.email,
+                          ),
                         ),
                       );
                     } else {

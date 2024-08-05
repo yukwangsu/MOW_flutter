@@ -103,7 +103,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const InfoScreen1(),
+                            builder: (context) => const InfoHi(
+                              //수정 필요
+                              email: 'fail-임시',
+                              passwd: 'fail-임시',
+                            ),
                           ),
                         );
                       } else {
@@ -155,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SignUp1(),
+                              builder: (context) => const SignUpAgree(),
                             ),
                           );
                         },

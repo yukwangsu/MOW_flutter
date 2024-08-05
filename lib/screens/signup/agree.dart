@@ -4,8 +4,8 @@ import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
-class SignUp1 extends StatelessWidget {
-  const SignUp1({super.key});
+class SignUpAgree extends StatelessWidget {
+  const SignUpAgree({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class SignUp1 extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SignUp2(),
+                        builder: (context) => SignUpSetId(),
                       ),
                     );
                   },
