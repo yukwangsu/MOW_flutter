@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/signin/login_screen.dart';
+import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
@@ -64,7 +65,6 @@ class Last extends StatelessWidget {
                   textColor: Colors.white,
                   borderColor: const Color(0xFF6B4D38),
                   onPress: () {
-                    //json 형식으로 변환해서 api 작업하기
                     print('''info[email: $email, 
                           passwd: $passwd, 
                           name: $name, 
@@ -72,6 +72,14 @@ class Last extends StatelessWidget {
                           sex: $sex,
                           job: $job,
                           mbti: $mbti]''');
+                    //json 형식으로 변환해서 api 작업하기
+                    SignupService.signupDetails(
+                      name,
+                      age!,
+                      sex,
+                      job,
+                      mbti,
+                    );
                     Navigator.push(
                       context,
                       MaterialPageRoute(

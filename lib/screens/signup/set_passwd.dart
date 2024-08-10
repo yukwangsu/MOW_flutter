@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/info/hi.dart';
+import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/set_passwd.dart';
@@ -64,6 +65,10 @@ class SignUpSetPw extends StatelessWidget {
                     if (passwdController.text == sameController.text) {
                       print('your email: $email');
                       print('your passwd: ${passwdController.text}');
+                      SignupService.signup(
+                        email,
+                        passwdController.text,
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute(

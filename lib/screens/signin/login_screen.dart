@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/find_passwd/enter_email.dart';
 import 'package:flutter_mow/screens/info/hi.dart';
 import 'package:flutter_mow/screens/signup/agree.dart';
+import 'package:flutter_mow/services/signin_service.dart';
+import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/input_bottom.dart';
 import 'package:flutter_mow/widgets/sub_text.dart';
@@ -94,19 +96,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     bgcolor: const Color(0xFF6B4D38),
                     textColor: Colors.white,
                     borderColor: const Color(0xFF6B4D38),
-                    onPress: () {
+                    onPress: () async {
                       print('login id: ${idController.text}');
                       print('login pw: ${passwordController.text}');
                       // 아이디, 비밀번호 확인
-                      if (idController.text == 'ididid') {
+                      bool success = await SigninService.signin(
+                        idController.text,
+                        passwordController.text,
+                      );
+                      if (success) {
                         idCorrect();
+                        //context.mounted: mounted는 StatefulWidget의 State 객체가 위젯 트리에 연결(mounted)되어 있는지를 나타내는 속성이다.
+                        //context.mounted는 현재의 BuildContext가 여전히 유효한 상태인지, 즉 State가 아직도 위젯 트리에 연결되어 있는지를 확인하는 데 사용된다.
+                        if (!context.mounted) return;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const InfoHi(
+                            builder: (context) => InfoHi(
                               //수정 필요
-                              email: 'fail-임시',
-                              passwd: 'fail-임시',
+                              email: idController.text,
+                              passwd: passwordController.text,
                             ),
                           ),
                         );
