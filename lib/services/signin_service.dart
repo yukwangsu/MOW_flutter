@@ -18,7 +18,7 @@ class SigninService {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
-      //accessToken 저장시 에러 발생
+      //accessToken 저장시 에러 발생 -> 해결
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         String accessToken = responseData['accessToken'];

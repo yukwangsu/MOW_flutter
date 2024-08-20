@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/info/hi.dart';
+import 'package:flutter_mow/services/signin_service.dart';
 import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
@@ -61,23 +62,31 @@ class SignUpSetPw extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  onPress: () {
+                  onPress: () async {
                     if (passwdController.text == sameController.text) {
                       print('your email: $email');
                       print('your passwd: ${passwdController.text}');
-                      SignupService.signup(
+                      await SignupService.signup(
                         email,
                         passwdController.text,
                       );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => InfoHi(
-                            email: email,
-                            passwd: passwdController.text,
-                          ),
-                        ),
+                      //signup이 끝나면 signin이 이루어짐
+                      bool success = await SigninService.signin(
+                        email,
+                        passwdController.text,
                       );
+                      if (success) {
+                        if (!context.mounted) return;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InfoHi(
+                              email: email,
+                              passwd: passwdController.text,
+                            ),
+                          ),
+                        );
+                      }
                     }
                   },
                 ),

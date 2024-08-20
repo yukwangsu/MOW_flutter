@@ -61,7 +61,7 @@ class SignupService {
     String? token = prefs.getString('accessToken');
     print('*****token: $token*****');
     var headers = {
-      'Authorization': 'Bearer $token',
+      'accessToken': '$token',
       'Content-Type': 'application/json',
     };
     final response = await http.post(url, headers: headers, body: body);
