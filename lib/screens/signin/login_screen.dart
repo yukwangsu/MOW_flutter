@@ -3,7 +3,6 @@ import 'package:flutter_mow/screens/find_passwd/enter_email.dart';
 import 'package:flutter_mow/screens/info/hi.dart';
 import 'package:flutter_mow/screens/signup/agree.dart';
 import 'package:flutter_mow/services/signin_service.dart';
-import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/input_bottom.dart';
 import 'package:flutter_mow/widgets/sub_text.dart';
