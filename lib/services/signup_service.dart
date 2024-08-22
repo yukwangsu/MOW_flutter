@@ -21,6 +21,30 @@ class SignupService {
     print('Response body: ${response.body}');
   }
 
+  static Future<bool> checkEmail(String email) async {
+    final url = Uri.parse(
+        'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/check/email?userEmail=$email');
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    try {
+      final response = await http.get(url, headers: headers);
+      print('----------check email----------');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        bool isEmailOK = responseData['isEmailOK'];
+        return isEmailOK ? true : false;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Error during check email: $e');
+      return false;
+    }
+  }
+
   static Future<bool> checkName(String name) async {
     final url = Uri.parse(
         'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/check/nickname?userNickname=$name');
