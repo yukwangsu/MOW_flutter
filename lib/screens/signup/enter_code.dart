@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/signup/set_passwd.dart';
+import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/sub_text.dart';
@@ -9,10 +10,12 @@ import 'package:flutter_svg/svg.dart';
 
 class SignUpEnterCode extends StatefulWidget {
   final String email;
+  final String authCode;
 
   const SignUpEnterCode({
     super.key,
     required this.email,
+    required this.authCode,
   });
 
   @override
@@ -100,15 +103,16 @@ class _SignUpEnterCode extends State<SignUpEnterCode> {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  onPress: () {
+                  onPress: () async {
                     String code = '';
                     for (var controller in digitControllers) {
                       code += controller.text;
                     }
                     //인증코드가 맞는지 확인
-                    if (code == '1234') {
+                    if (code == widget.authCode) {
                       codeCorrect();
-                      print('code is $code');
+                      print('input code is $code');
+                      print('auth code is ${widget.authCode}');
                       print('info[email: ${widget.email}]');
                       Navigator.push(
                         context,

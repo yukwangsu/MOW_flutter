@@ -11,7 +11,6 @@ class SigninService {
     var headers = {
       'Content-Type': 'application/json',
     };
-
     try {
       final response = await http.post(url, headers: headers);
       print('----------sign in----------');
@@ -31,6 +30,30 @@ class SigninService {
       }
     } catch (e) {
       print('Error during sign in: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> checkDetails() async {
+    final url = Uri.parse(
+        'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/check/details');
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    try {
+      final response = await http.get(url, headers: headers);
+      print('----------check details----------');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        bool isDetailsNull = responseData['isDetailsNull'];
+        return isDetailsNull ? true : false;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Error during check details: $e');
       return false;
     }
   }
