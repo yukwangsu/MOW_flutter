@@ -64,6 +64,7 @@ class Last extends StatelessWidget {
                   bgcolor: const Color(0xFF6B4D38),
                   textColor: Colors.white,
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: 0.5,
                   onPress: () {
                     print('''info[email: $email, 
                           passwd: $passwd, 

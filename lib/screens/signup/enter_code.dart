@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/signup/set_passwd.dart';
-import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/sub_text.dart';
@@ -27,6 +26,40 @@ class _SignUpEnterCode extends State<SignUpEnterCode> {
       List<TextEditingController>.generate(4, (_) => TextEditingController());
 
   late bool isCodeWrong = false;
+  double buttonOpacity = 0.5;
+  bool buttonWork = false;
+
+  @override
+  void initState() {
+    super.initState();
+    for (var controller in digitControllers) {
+      controller.addListener(_checkDigitsFilled);
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var controller in digitControllers) {
+      controller.removeListener(_checkDigitsFilled);
+    }
+    super.dispose();
+  }
+
+  void _checkDigitsFilled() {
+    bool allFilled =
+        digitControllers.every((controller) => controller.text.isNotEmpty);
+    if (allFilled) {
+      buttonWork = true;
+      setState(() {
+        buttonOpacity = 1.0;
+      });
+    } else {
+      buttonWork = false;
+      setState(() {
+        buttonOpacity = 0.5;
+      });
+    }
+  }
 
   codeCorrect() {
     setState(() {
@@ -103,27 +136,30 @@ class _SignUpEnterCode extends State<SignUpEnterCode> {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: buttonOpacity,
                   onPress: () async {
-                    String code = '';
-                    for (var controller in digitControllers) {
-                      code += controller.text;
-                    }
-                    //인증코드가 맞는지 확인
-                    if (code == widget.authCode) {
-                      codeCorrect();
-                      print('input code is $code');
-                      print('auth code is ${widget.authCode}');
-                      print('info[email: ${widget.email}]');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SignUpSetPw(
-                            email: widget.email,
+                    if (buttonWork) {
+                      String code = '';
+                      for (var controller in digitControllers) {
+                        code += controller.text;
+                      }
+                      //인증코드가 맞는지 확인
+                      if (code == widget.authCode) {
+                        codeCorrect();
+                        print('input code is $code');
+                        print('auth code is ${widget.authCode}');
+                        print('info[email: ${widget.email}]');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUpSetPw(
+                              email: widget.email,
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      codeWrong();
+                        );
+                      } else {
+                        codeWrong();
+                      }
                     }
                   },
                 ),

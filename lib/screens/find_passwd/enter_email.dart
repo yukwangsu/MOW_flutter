@@ -53,6 +53,7 @@ class EnterEmail extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: 0.5,
                   onPress: () {
                     print('send email to ${idController.text}');
                     Navigator.push(

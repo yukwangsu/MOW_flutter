@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignupService {
   //회원가입 시 사용자가 아이디와 비밀번호를 입력했을 때 실행
@@ -21,6 +22,7 @@ class SignupService {
     print('Response body: ${response.body}');
   }
 
+  //중복된 이메일 방지
   static Future<bool> checkEmail(String email) async {
     final url = Uri.parse(
         'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/check/email?userEmail=$email');
@@ -45,6 +47,7 @@ class SignupService {
     }
   }
 
+  //이메일에 인증코드 발송
   static Future<String> sendEmail(String email) async {
     final url = Uri.parse(
         'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/send/push/code/email?userEmail=$email');
@@ -53,7 +56,7 @@ class SignupService {
     };
     try {
       final response = await http.get(url, headers: headers);
-      print('----------check code----------');
+      print('----------send email code----------');
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -69,6 +72,7 @@ class SignupService {
     }
   }
 
+  //중복된 닉네임 방지
   static Future<bool> checkName(String name) async {
     final url = Uri.parse(
         'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/check/nickname?userNickname=$name');
@@ -93,6 +97,7 @@ class SignupService {
     }
   }
 
+  //사용자 정보 입력
   static signupDetails(
       String name, int age, String sex, String job, String mbti) async {
     final url = Uri.parse(
@@ -116,5 +121,27 @@ class SignupService {
     print('----------sign up details----------');
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
+  }
+
+  //구글계정으로 회원가입
+  static googleSignup() async {
+    final url = Uri.parse(
+        'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/oauth2/authorization/google');
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    final response = await http.post(url, headers: headers);
+    print('----------google sign up----------');
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    const String urlString =
+        'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/oauth2/authorization/google';
+    final Uri googleUrl = Uri.parse(Uri.encodeFull(urlString));
+
+    if (await canLaunchUrl(googleUrl)) {
+      await launchUrl(googleUrl);
+    } else {
+      throw 'Could not launch $googleUrl';
+    }
   }
 }

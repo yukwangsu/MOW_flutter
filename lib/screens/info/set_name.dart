@@ -25,6 +25,35 @@ class _InfoSetNameState extends State<InfoSetName> {
   final TextEditingController nameController = TextEditingController();
 
   bool isNameExisted = false;
+  double buttonOpacity = 0.5;
+  bool bottonWork = false;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.addListener(_checkNameInput);
+  }
+
+  @override
+  void dispose() {
+    nameController.removeListener(_checkNameInput);
+    nameController.dispose();
+    super.dispose();
+  }
+
+  void _checkNameInput() {
+    if (nameController.text.isNotEmpty) {
+      bottonWork = true;
+      setState(() {
+        buttonOpacity = 1.0;
+      });
+    } else {
+      bottonWork = false;
+      setState(() {
+        buttonOpacity = 0.5;
+      });
+    }
+  }
 
   nameExisted() {
     setState(() {
@@ -103,29 +132,32 @@ class _InfoSetNameState extends State<InfoSetName> {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: buttonOpacity,
                   onPress: () async {
-                    print(
-                        'info[email: ${widget.email}, passwd: ${widget.passwd}, name: ${nameController.text}]');
-                    bool success = await SignupService.checkName(
-                      nameController.text,
-                    );
-                    if (success) {
-                      nameNotExisted();
-                      //context.mounted: mounted는 StatefulWidget의 State 객체가 위젯 트리에 연결(mounted)되어 있는지를 나타내는 속성이다.
-                      //context.mounted는 현재의 BuildContext가 여전히 유효한 상태인지, 즉 State가 아직도 위젯 트리에 연결되어 있는지를 확인하는 데 사용된다.
-                      if (!context.mounted) return;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SetAge(
-                            email: widget.email,
-                            passwd: widget.passwd,
-                            name: nameController.text,
-                          ),
-                        ),
+                    if (bottonWork) {
+                      print(
+                          'info[email: ${widget.email}, passwd: ${widget.passwd}, name: ${nameController.text}]');
+                      bool success = await SignupService.checkName(
+                        nameController.text,
                       );
-                    } else {
-                      nameExisted();
+                      if (success) {
+                        nameNotExisted();
+                        //context.mounted: mounted는 StatefulWidget의 State 객체가 위젯 트리에 연결(mounted)되어 있는지를 나타내는 속성이다.
+                        //context.mounted는 현재의 BuildContext가 여전히 유효한 상태인지, 즉 State가 아직도 위젯 트리에 연결되어 있는지를 확인하는 데 사용된다.
+                        if (!context.mounted) return;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SetAge(
+                              email: widget.email,
+                              passwd: widget.passwd,
+                              name: nameController.text,
+                            ),
+                          ),
+                        );
+                      } else {
+                        nameExisted();
+                      }
                     }
                   },
                 ),

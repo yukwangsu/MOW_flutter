@@ -53,6 +53,7 @@ class InfoHi extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: 1.0,
                   onPress: () {
                     Navigator.push(
                       context,

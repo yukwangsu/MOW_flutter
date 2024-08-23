@@ -62,6 +62,7 @@ class SetAge extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: 0.5,
                   onPress: () {
                     print(
                         'info[email: $email, passwd: $passwd, name: $name, age: ${ageController.text}]');

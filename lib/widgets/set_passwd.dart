@@ -27,7 +27,8 @@ class SetPasswd extends StatefulWidget {
 class _SetPasswdState extends State<SetPasswd> {
   late bool con1;
   late bool con2;
-  late String val1;
+  late String val1 = '';
+  late String val2 = '';
   late bool isSame;
 
   @override
@@ -101,6 +102,12 @@ class _SetPasswdState extends State<SetPasswd> {
               } else {
                 con2False();
               }
+              if (value == val2) {
+                same();
+              }
+              if (value != val2) {
+                wrong();
+              }
             },
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
@@ -173,6 +180,7 @@ class _SetPasswdState extends State<SetPasswd> {
               cursorColor: Colors.black, // 커서 색깔
               obscureText: widget.obscureText, // 항상 보이게 하는가, 안 보이게 하는가
               onChanged: (value) {
+                val2 = value;
                 if (value == val1) {
                   same(); //괄호 필수
                 } else {

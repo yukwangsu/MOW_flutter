@@ -41,6 +41,7 @@ class ShowPasswd extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: 0.5,
                   onPress: () {
                     Navigator.push(
                       context,

@@ -3,6 +3,7 @@ import 'package:flutter_mow/screens/find_passwd/enter_email.dart';
 import 'package:flutter_mow/screens/info/hi.dart';
 import 'package:flutter_mow/screens/signup/agree.dart';
 import 'package:flutter_mow/services/signin_service.dart';
+import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/input_bottom.dart';
 import 'package:flutter_mow/widgets/sub_text.dart';
@@ -95,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     bgcolor: const Color(0xFF6B4D38),
                     textColor: Colors.white,
                     borderColor: const Color(0xFF6B4D38),
+                    opacity: 1.0,
                     onPress: () async {
                       print('login id: ${idController.text}');
                       print('login pw: ${passwordController.text}');
@@ -106,12 +108,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       //유효한 아이디와 비밀번호를 입력했는지 확인
                       if (success) {
                         idCorrect();
+                        //사용자 정보를 입력했는지 안 했는지 확인
+                        bool isDetailNull = await SigninService.checkDetails();
+                        print('[[is detail null??]] :: ***$isDetailNull***');
                         //context.mounted: mounted는 StatefulWidget의 State 객체가 위젯 트리에 연결(mounted)되어 있는지를 나타내는 속성이다.
                         //context.mounted는 현재의 BuildContext가 여전히 유효한 상태인지, 즉 State가 아직도 위젯 트리에 연결되어 있는지를 확인하는 데 사용된다.
                         if (!context.mounted) return;
-                        //사용자 정보를 입력했는지 안 했는지 확인
-                        bool hasDetails = await SigninService.checkDetails();
-                        print('[[has details??]] :: ***$hasDetails***');
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -227,7 +229,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          SignupService.googleSignup();
+                        },
                         child: Image.asset('assets/images/google.png'),
                       ),
                       const SizedBox(

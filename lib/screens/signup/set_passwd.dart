@@ -7,16 +7,62 @@ import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/set_passwd.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
-class SignUpSetPw extends StatelessWidget {
+class SignUpSetPw extends StatefulWidget {
   final String email;
 
-  SignUpSetPw({
+  const SignUpSetPw({
     super.key,
     required this.email,
   });
 
+  @override
+  State<SignUpSetPw> createState() => _SignUpSetPwState();
+}
+
+class _SignUpSetPwState extends State<SignUpSetPw> {
   final TextEditingController passwdController = TextEditingController();
   final TextEditingController sameController = TextEditingController();
+
+  double buttonOpacity = 0.5;
+  bool bottonWork = false;
+
+  @override
+  void initState() {
+    super.initState();
+    passwdController.addListener(_checkPasswordInput);
+    sameController.addListener(_checkPasswordInput);
+  }
+
+  @override
+  void dispose() {
+    passwdController.removeListener(_checkPasswordInput);
+    sameController.removeListener(_checkPasswordInput);
+    passwdController.dispose();
+    sameController.dispose();
+    super.dispose();
+  }
+
+  void _checkPasswordInput() {
+    bool hasLetter = passwdController.text.contains(RegExp(r'[a-zA-Z]'));
+    bool hasDigit = passwdController.text.contains(RegExp(r'[0-9]'));
+    bool hasSpecialCharacter =
+        passwdController.text.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'));
+    if (passwdController.text == sameController.text &&
+        passwdController.text.length >= 8 &&
+        hasLetter &&
+        hasDigit &&
+        hasSpecialCharacter) {
+      bottonWork = true;
+      setState(() {
+        buttonOpacity = 1.0;
+      });
+    } else {
+      bottonWork = false;
+      setState(() {
+        buttonOpacity = 0.5;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,17 +108,19 @@ class SignUpSetPw extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: buttonOpacity,
                   onPress: () async {
-                    if (passwdController.text == sameController.text) {
-                      print('your email: $email');
+                    //텍스트가 같은지, 비밀번호 조건에 만족하는지 확인
+                    if (bottonWork) {
+                      print('your email: ${widget.email}');
                       print('your passwd: ${passwdController.text}');
                       await SignupService.signup(
-                        email,
+                        widget.email,
                         passwdController.text,
                       );
                       //signup이 끝나면 signin이 이루어짐
                       bool success = await SigninService.signin(
-                        email,
+                        widget.email,
                         passwdController.text,
                       );
                       if (success) {
@@ -81,7 +129,7 @@ class SignUpSetPw extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => InfoHi(
-                              email: email,
+                              email: widget.email,
                               passwd: passwdController.text,
                             ),
                           ),

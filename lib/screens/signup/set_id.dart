@@ -18,6 +18,35 @@ class _SignUpSetIdState extends State<SignUpSetId> {
   final TextEditingController idController = TextEditingController();
 
   bool isEmailExisted = false;
+  double buttonOpacity = 0.5;
+  bool bottonWork = false;
+
+  @override
+  void initState() {
+    super.initState();
+    idController.addListener(_checkEmailInput);
+  }
+
+  @override
+  void dispose() {
+    idController.removeListener(_checkEmailInput);
+    idController.dispose();
+    super.dispose();
+  }
+
+  void _checkEmailInput() {
+    if (idController.text.contains('@')) {
+      bottonWork = true;
+      setState(() {
+        buttonOpacity = 1.0;
+      });
+    } else {
+      bottonWork = false;
+      setState(() {
+        buttonOpacity = 0.5;
+      });
+    }
+  }
 
   emailExisted() {
     setState(() {
@@ -95,30 +124,33 @@ class _SignUpSetIdState extends State<SignUpSetId> {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
+                  opacity: buttonOpacity,
                   onPress: () async {
-                    print('send email to ${idController.text}');
-                    bool success = await SignupService.checkEmail(
-                      idController.text,
-                    );
-                    if (success) {
-                      emailNotExisted();
-                      String authCode = await SignupService.sendEmail(
+                    if (bottonWork) {
+                      bool success = await SignupService.checkEmail(
                         idController.text,
                       );
-                      //context.mounted: mounted는 StatefulWidget의 State 객체가 위젯 트리에 연결(mounted)되어 있는지를 나타내는 속성이다.
-                      //context.mounted는 현재의 BuildContext가 여전히 유효한 상태인지, 즉 State가 아직도 위젯 트리에 연결되어 있는지를 확인하는 데 사용된다.
-                      if (!context.mounted) return;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SignUpEnterCode(
-                            email: idController.text,
-                            authCode: authCode,
+                      if (success) {
+                        emailNotExisted();
+                        print('send email to ${idController.text}');
+                        String authCode = await SignupService.sendEmail(
+                          idController.text,
+                        );
+                        //context.mounted: mounted는 StatefulWidget의 State 객체가 위젯 트리에 연결(mounted)되어 있는지를 나타내는 속성이다.
+                        //context.mounted는 현재의 BuildContext가 여전히 유효한 상태인지, 즉 State가 아직도 위젯 트리에 연결되어 있는지를 확인하는 데 사용된다.
+                        if (!context.mounted) return;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUpEnterCode(
+                              email: idController.text,
+                              authCode: authCode,
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      emailExisted();
+                        );
+                      } else {
+                        emailExisted();
+                      }
                     }
                   },
                 ),
