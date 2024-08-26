@@ -36,8 +36,12 @@ class SigninService {
 
   static Future<bool> checkDetails() async {
     final url = Uri.parse(
-        'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/check/details');
+        'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/check/datails');
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('accessToken');
+    print('*****token: $token*****');
     var headers = {
+      'accessToken': '$token',
       'Content-Type': 'application/json',
     };
     try {
@@ -48,7 +52,7 @@ class SigninService {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         bool isDetailsNull = responseData['isDetailsNull'];
-        return isDetailsNull ? true : false;
+        return isDetailsNull;
       } else {
         return false;
       }

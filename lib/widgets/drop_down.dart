@@ -15,8 +15,16 @@ class DropDown extends StatefulWidget {
 }
 
 class _DropDownState extends State<DropDown> {
+  //초기값 = '직장인'
   String _selectedValue = '직장인';
   bool _isDropdownOpened = false;
+
+  @override
+  void initState() {
+    super.initState();
+    //기본값을 '직장인'으로 설정
+    widget.controller.text = _selectedValue;
+  }
 
   @override
   Widget build(BuildContext context) {
