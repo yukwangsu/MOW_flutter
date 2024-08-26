@@ -5,19 +5,53 @@ import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/input_digit.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
-class SetAge extends StatelessWidget {
+class SetAge extends StatefulWidget {
   final String email;
   final String passwd;
   final String name;
 
-  SetAge({
+  const SetAge({
     super.key,
     required this.email,
     required this.passwd,
     required this.name,
   });
 
+  @override
+  State<SetAge> createState() => _SetAgeState();
+}
+
+class _SetAgeState extends State<SetAge> {
   final TextEditingController ageController = TextEditingController();
+  double buttonOpacity = 0.5;
+  bool bottonWork = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ageController.addListener(_checkAgeInput);
+  }
+
+  @override
+  void dispose() {
+    ageController.removeListener(_checkAgeInput);
+    ageController.dispose();
+    super.dispose();
+  }
+
+  void _checkAgeInput() {
+    if (ageController.text.isNotEmpty) {
+      bottonWork = true;
+      setState(() {
+        buttonOpacity = 1.0;
+      });
+    } else {
+      bottonWork = false;
+      setState(() {
+        buttonOpacity = 0.5;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,21 +96,23 @@ class SetAge extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  opacity: 0.5,
+                  opacity: buttonOpacity,
                   onPress: () {
-                    print(
-                        'info[email: $email, passwd: $passwd, name: $name, age: ${ageController.text}]');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SetSex(
-                          email: email,
-                          passwd: passwd,
-                          name: name,
-                          age: int.tryParse(ageController.text),
+                    if (bottonWork) {
+                      print(
+                          'info[email: ${widget.email}, passwd: ${widget.passwd}, name: ${widget.name}, age: ${ageController.text}]');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SetSex(
+                            email: widget.email,
+                            passwd: widget.passwd,
+                            name: widget.name,
+                            age: int.tryParse(ageController.text),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                 ),
                 const SizedBox(

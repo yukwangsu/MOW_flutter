@@ -105,7 +105,7 @@ class _SetMbtiState extends State<SetMbti> {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  opacity: 0.5,
+                  opacity: mbti.isNotEmpty ? 1.0 : 0.5,
                   onPress: () {
                     if (mbti.isNotEmpty) {
                       print('''info[email: ${widget.email}, 

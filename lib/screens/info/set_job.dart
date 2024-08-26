@@ -73,7 +73,7 @@ class SetJob extends StatelessWidget {
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  opacity: 0.5,
+                  opacity: 1.0,
                   onPress: () {
                     print('''info[email: $email, 
                           passwd: $passwd, 
