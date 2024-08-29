@@ -36,8 +36,8 @@ class SignupService {
       print('Response body: ${response.body}');
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        bool isEmailOK = responseData['isEmailOK'];
-        return isEmailOK;
+        bool isEmailNull = responseData['isEmailNull'];
+        return isEmailNull;
       } else {
         print('Error during check email not 200');
         return false;
@@ -144,5 +144,23 @@ class SignupService {
     } else {
       throw 'Could not launch $googleUrl';
     }
+  }
+
+  //비밀번호 변경
+  static resetPW(String email, String passwd) async {
+    final url = Uri.parse(
+        'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/auth/password/change');
+    var data = {
+      'userEmail': email,
+      'password': passwd,
+    };
+    var body = jsonEncode(data);
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    final response = await http.post(url, headers: headers, body: body);
+    print('----------resetPW----------');
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
   }
 }

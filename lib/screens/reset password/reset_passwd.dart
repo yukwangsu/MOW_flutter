@@ -1,11 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/signin/login_screen.dart';
+import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
+import 'package:flutter_mow/widgets/set_passwd.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
 
-class ResetPasswd extends StatelessWidget {
-  const ResetPasswd({super.key});
+class ResetPassword extends StatefulWidget {
+  final String email;
+
+  const ResetPassword({
+    super.key,
+    required this.email,
+  });
+
+  @override
+  State<ResetPassword> createState() => _ResetPasswordState();
+}
+
+class _ResetPasswordState extends State<ResetPassword> {
+  final TextEditingController passwdController = TextEditingController();
+  final TextEditingController sameController = TextEditingController();
+
+  double buttonOpacity = 0.5;
+  bool bottonWork = false;
+
+  @override
+  void initState() {
+    super.initState();
+    passwdController.addListener(_checkPasswordInput);
+    sameController.addListener(_checkPasswordInput);
+  }
+
+  @override
+  void dispose() {
+    passwdController.removeListener(_checkPasswordInput);
+    sameController.removeListener(_checkPasswordInput);
+    passwdController.dispose();
+    sameController.dispose();
+    super.dispose();
+  }
+
+  void _checkPasswordInput() {
+    bool hasLetter = passwdController.text.contains(RegExp(r'[a-zA-Z]'));
+    bool hasDigit = passwdController.text.contains(RegExp(r'[0-9]'));
+    bool hasSpecialCharacter =
+        passwdController.text.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'));
+    if (passwdController.text == sameController.text &&
+        passwdController.text.length >= 8 &&
+        hasLetter &&
+        hasDigit &&
+        hasSpecialCharacter) {
+      bottonWork = true;
+      setState(() {
+        buttonOpacity = 1.0;
+      });
+    } else {
+      bottonWork = false;
+      setState(() {
+        buttonOpacity = 0.5;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,19 +73,29 @@ class ResetPasswd extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
-              TextStart(
-                text: '비밀번호를 찾았어요!',
+              const TextStart(
+                text: '새 비밀번호를',
               ),
-              SizedBox(
+              const TextStart(
+                text: '알려주세요 \u{1f92b}',
+              ),
+              const SizedBox(
                 height: 60,
               ),
-              //비밀번호 보여주기 추가
+              SetPasswd(
+                label: '비밀번호 입력',
+                labelColor: const Color(0xFFC3C3C3),
+                borderColor: const Color(0xFFCCD1DD),
+                obscureText: true,
+                controller: passwdController,
+                controllerSame: sameController,
+              ),
             ],
           ),
           Padding(
@@ -37,18 +103,28 @@ class ResetPasswd extends StatelessWidget {
             child: Column(
               children: [
                 ButtonMain(
-                  text: '확인',
+                  text: '비밀번호 변경하기',
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  opacity: 0.5,
-                  onPress: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
+                  opacity: buttonOpacity,
+                  onPress: () async {
+                    //텍스트가 같은지, 비밀번호 조건에 만족하는지 확인
+                    if (bottonWork) {
+                      print('your email: ${widget.email}');
+                      print('your passwd: ${passwdController.text}');
+                      await SignupService.resetPW(
+                        widget.email,
+                        passwdController.text,
+                      );
+                      if (!context.mounted) return;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    }
                   },
                 ),
                 const SizedBox(

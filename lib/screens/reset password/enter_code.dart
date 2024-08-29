@@ -8,17 +8,58 @@ import 'package:flutter_mow/widgets/input_4digit.dart';
 import 'package:flutter_svg/svg.dart';
 
 class EnterCode extends StatefulWidget {
-  const EnterCode({super.key});
+  final String email;
+  final String authCode;
+
+  const EnterCode({
+    super.key,
+    required this.email,
+    required this.authCode,
+  });
 
   @override
-  State<EnterCode> createState() => _EnterCodeState();
+  State<EnterCode> createState() => _EnterCode();
 }
 
-class _EnterCodeState extends State<EnterCode> {
+class _EnterCode extends State<EnterCode> {
   final List<TextEditingController> digitControllers =
       List<TextEditingController>.generate(4, (_) => TextEditingController());
 
   late bool isCodeWrong = false;
+  double buttonOpacity = 0.5;
+  bool buttonWork = false;
+
+  @override
+  void initState() {
+    super.initState();
+    for (var controller in digitControllers) {
+      controller.addListener(_checkDigitsFilled);
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var controller in digitControllers) {
+      controller.removeListener(_checkDigitsFilled);
+    }
+    super.dispose();
+  }
+
+  void _checkDigitsFilled() {
+    bool allFilled =
+        digitControllers.every((controller) => controller.text.isNotEmpty);
+    if (allFilled) {
+      buttonWork = true;
+      setState(() {
+        buttonOpacity = 1.0;
+      });
+    } else {
+      buttonWork = false;
+      setState(() {
+        buttonOpacity = 0.5;
+      });
+    }
+  }
 
   codeCorrect() {
     setState(() {
@@ -52,7 +93,7 @@ class _EnterCodeState extends State<EnterCode> {
                 text: '이메일로 전송된',
               ),
               const TextStart(
-                text: '인증코드를 입력해주세요.',
+                text: '인증코드를 알려주세요!',
               ),
               const SizedBox(
                 height: 60,
@@ -91,27 +132,34 @@ class _EnterCodeState extends State<EnterCode> {
             child: Column(
               children: [
                 ButtonMain(
-                  text: '인증',
+                  text: '다음',
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
-                  opacity: 0.5,
-                  onPress: () {
-                    String code = '';
-                    for (var controller in digitControllers) {
-                      code += controller.text;
-                    }
-                    //인증코드가 맞는지 확인
-                    if (code == '1234') {
-                      codeCorrect();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ResetPasswd(),
-                        ),
-                      );
-                    } else {
-                      codeWrong();
+                  opacity: buttonOpacity,
+                  onPress: () async {
+                    if (buttonWork) {
+                      String code = '';
+                      for (var controller in digitControllers) {
+                        code += controller.text;
+                      }
+                      //인증코드가 맞는지 확인
+                      if (code == widget.authCode) {
+                        codeCorrect();
+                        print('input code is $code');
+                        print('auth code is ${widget.authCode}');
+                        print('info[email: ${widget.email}]');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ResetPassword(
+                              email: widget.email,
+                            ),
+                          ),
+                        );
+                      } else {
+                        codeWrong();
+                      }
                     }
                   },
                 ),

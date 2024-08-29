@@ -17,7 +17,7 @@ class SignUpSetId extends StatefulWidget {
 class _SignUpSetIdState extends State<SignUpSetId> {
   final TextEditingController idController = TextEditingController();
 
-  bool isEmailExisted = false;
+  bool isEmailNull = true;
   double buttonOpacity = 0.5;
   bool bottonWork = false;
 
@@ -50,13 +50,13 @@ class _SignUpSetIdState extends State<SignUpSetId> {
 
   emailExisted() {
     setState(() {
-      isEmailExisted = true;
+      isEmailNull = false;
     });
   }
 
   emailNotExisted() {
     setState(() {
-      isEmailExisted = false;
+      isEmailNull = true;
     });
   }
 
@@ -88,13 +88,13 @@ class _SignUpSetIdState extends State<SignUpSetId> {
               InputText(
                 label: 'mow@mow.com',
                 labelColor: const Color(0xFFC3C3C3),
-                borderColor: isEmailExisted
-                    ? const Color(0xFFFF2E2E)
-                    : const Color(0xFFCCD1DD),
+                borderColor: isEmailNull
+                    ? const Color(0xFFCCD1DD)
+                    : const Color(0xFFFF2E2E),
                 obscureText: false,
                 controller: idController,
               ),
-              if (isEmailExisted) ...[
+              if (!isEmailNull) ...[
                 const Column(
                   children: [
                     SizedBox(
@@ -127,10 +127,10 @@ class _SignUpSetIdState extends State<SignUpSetId> {
                   opacity: buttonOpacity,
                   onPress: () async {
                     if (bottonWork) {
-                      bool success = await SignupService.checkEmail(
+                      bool isEmailNull = await SignupService.checkEmail(
                         idController.text,
                       );
-                      if (success) {
+                      if (isEmailNull) {
                         emailNotExisted();
                         print('send email to ${idController.text}');
                         String authCode = await SignupService.sendEmail(
