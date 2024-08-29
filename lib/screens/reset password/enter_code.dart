@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/find_passwd/show_passwd.dart';
+import 'package:flutter_mow/screens/reset%20password/reset_passwd.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/sub_text.dart';
@@ -107,7 +107,7 @@ class _EnterCodeState extends State<EnterCode> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ShowPasswd(),
+                          builder: (context) => const ResetPasswd(),
                         ),
                       );
                     } else {

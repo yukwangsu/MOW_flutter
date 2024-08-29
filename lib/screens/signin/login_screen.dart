@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/find_passwd/enter_email.dart';
+import 'package:flutter_mow/screens/reset%20password/enter_email.dart';
 import 'package:flutter_mow/screens/info/hi.dart';
 import 'package:flutter_mow/screens/signup/agree.dart';
 import 'package:flutter_mow/services/signin_service.dart';
@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EnterEmail(),
+                              builder: (context) => const EnterEmail(),
                             ),
                           );
                         }
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EnterEmail(),
+                              builder: (context) => const EnterEmail(),
                             ),
                           );
                         },

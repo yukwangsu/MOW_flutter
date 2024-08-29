@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/find_passwd/enter_code.dart';
+import 'package:flutter_mow/screens/signin/login_screen.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
 import 'package:flutter_mow/widgets/text_start.dart';
-import 'package:flutter_mow/widgets/input_text.dart';
 
-class EnterEmail extends StatelessWidget {
-  EnterEmail({super.key});
-
-  final TextEditingController idController = TextEditingController();
+class ResetPasswd extends StatelessWidget {
+  const ResetPasswd({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +17,19 @@ class EnterEmail extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
+              SizedBox(
                 height: 25,
               ),
-              const TextStart(
-                text: '가입시 사용한',
+              TextStart(
+                text: '비밀번호를 찾았어요!',
               ),
-              const TextStart(
-                text: '이메일을 입력해주세요.',
-              ),
-              const SizedBox(
+              SizedBox(
                 height: 60,
               ),
-              InputText(
-                label: '이메일 입력',
-                labelColor: const Color(0xFFC3C3C3),
-                borderColor: const Color(0xFFCCD1DD),
-                obscureText: false,
-                controller: idController,
-              ),
+              //비밀번호 보여주기 추가
             ],
           ),
           Padding(
@@ -49,17 +37,16 @@ class EnterEmail extends StatelessWidget {
             child: Column(
               children: [
                 ButtonMain(
-                  text: '인증코드 받기',
+                  text: '확인',
                   bgcolor: Colors.white,
                   textColor: const Color(0xFF6B4D38),
                   borderColor: const Color(0xFF6B4D38),
                   opacity: 0.5,
                   onPress: () {
-                    print('send email to ${idController.text}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const EnterCode(),
+                        builder: (context) => const LoginScreen(),
                       ),
                     );
                   },

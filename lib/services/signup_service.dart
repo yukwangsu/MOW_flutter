@@ -37,8 +37,9 @@ class SignupService {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         bool isEmailOK = responseData['isEmailOK'];
-        return isEmailOK ? true : false;
+        return isEmailOK;
       } else {
+        print('Error during check email not 200');
         return false;
       }
     } catch (e) {
