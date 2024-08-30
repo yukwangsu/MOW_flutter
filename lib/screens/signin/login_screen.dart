@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mow/screens/map/map.dart';
 import 'package:flutter_mow/screens/reset%20password/enter_email.dart';
 import 'package:flutter_mow/screens/info/hi.dart';
 import 'package:flutter_mow/screens/signup/agree.dart';
@@ -110,10 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         idCorrect();
                         //사용자 정보를 입력했는지 안 했는지 확인
                         bool isDetailNull = await SigninService.checkDetails();
-                        print('[[is detail null??]] :: ***$isDetailNull***');
                         //context.mounted: mounted는 StatefulWidget의 State 객체가 위젯 트리에 연결(mounted)되어 있는지를 나타내는 속성이다.
                         //context.mounted는 현재의 BuildContext가 여전히 유효한 상태인지, 즉 State가 아직도 위젯 트리에 연결되어 있는지를 확인하는 데 사용된다.
                         if (!context.mounted) return;
+                        //사용자 정보를 입력하지 않은 경우 입력화면으로 이동
                         if (isDetailNull) {
                           Navigator.push(
                             context,
@@ -124,11 +125,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           );
+                          //사용자 정보를 입력한 경우 지도 화면으로 이동
                         } else {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const EnterEmail(),
+                              builder: (context) => MapScreen(),
                             ),
                           );
                         }
@@ -144,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      //비밀번호 찾기 버튼
+                      //비밀번호 변경 버튼
                       TextButton(
                         onPressed: () {
                           Navigator.push(
@@ -155,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: const Text(
-                          '비밀번호 찾기',
+                          '비밀번호를 잊었어요',
                           style: TextStyle(
                             color: Color(0xFFC3C3C3),
                             fontSize: 14,

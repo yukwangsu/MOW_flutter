@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mow/screens/signin/login_screen.dart';
+import 'package:flutter_mow/screens/map/map.dart';
 import 'package:flutter_mow/services/signup_service.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/button_main.dart';
@@ -84,7 +84,7 @@ class Last extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
+                        builder: (context) => MapScreen(),
                       ),
                     );
                   },

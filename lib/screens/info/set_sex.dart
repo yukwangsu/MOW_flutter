@@ -60,8 +60,8 @@ class _SetSexState extends State<SetSex> {
               const SizedBox(
                 height: 25,
               ),
-              const TextStart(
-                text: '000님의',
+              TextStart(
+                text: '${widget.name} 님의',
               ),
               const TextStart(
                 text: '성별이 궁금해요 !',

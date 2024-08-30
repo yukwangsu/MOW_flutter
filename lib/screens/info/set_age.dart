@@ -69,8 +69,8 @@ class _SetAgeState extends State<SetAge> {
               const SizedBox(
                 height: 25,
               ),
-              const TextStart(
-                text: '000님의',
+              TextStart(
+                text: '${widget.name} 님의',
               ),
               const TextStart(
                 text: '나이가 궁금해요 !',
