@@ -83,6 +83,7 @@ class _SetSexState extends State<SetSex> {
                       text: '남자',
                       textColor:
                           sex == '남자' ? Colors.white : const Color(0xFF6B4D38),
+                      textSize: 20.0,
                       onPress: () {
                         selectMan();
                       },
@@ -100,6 +101,7 @@ class _SetSexState extends State<SetSex> {
                       text: '여자',
                       textColor:
                           sex == '여자' ? Colors.white : const Color(0xFF6B4D38),
+                      textSize: 20.0,
                       onPress: () {
                         selectWoman();
                       },
@@ -118,6 +120,7 @@ class _SetSexState extends State<SetSex> {
                       textColor: sex == '선택안함'
                           ? Colors.white
                           : const Color(0xFF6B4D38),
+                      textSize: 20.0,
                       onPress: () {
                         selectNone();
                       },

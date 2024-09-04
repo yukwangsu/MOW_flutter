@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mow/services/search_service.dart';
+import 'package:flutter_svg/svg.dart';
 
 class SearchPlace extends StatelessWidget {
   final Color borderColor;
@@ -13,6 +15,7 @@ class SearchPlace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      height: 38.0,
       child: TextField(
         controller: controller, //입력값 controller
         cursorColor: Colors.black, // 커서 색깔
@@ -33,7 +36,21 @@ class SearchPlace extends StatelessWidget {
           ),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          isDense: true,
+          //아이콘 추가
+          suffixIcon: GestureDetector(
+            onTap: () {
+              print('----------search result----------');
+              var result = SearchService.searchPlace(controller.text);
+              print('result: $result');
+              print('your keyword: ${controller.text}');
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(7.0),
+              child: SvgPicture.asset(
+                'assets/icons/search_icon.svg',
+              ),
+            ),
+          ),
         ),
       ),
     );

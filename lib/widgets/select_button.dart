@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class SelectButton extends StatelessWidget {
   final double height;
@@ -7,8 +8,11 @@ class SelectButton extends StatelessWidget {
   final double radius;
   final String text;
   final Color textColor;
+  final double textSize;
   final Color? borderColor; // nullable 테두리 색상
   final double? borderWidth; // 테두리 두께
+  final double? borderOpacity; // 테두리 투명도
+  final String? svgIconPath; // 아이콘 추가
   final Function onPress;
 
   const SelectButton({
@@ -19,8 +23,11 @@ class SelectButton extends StatelessWidget {
     required this.radius,
     required this.text,
     required this.textColor,
+    required this.textSize,
     this.borderColor,
-    this.borderWidth, // 테두리 두께 기본 값
+    this.borderWidth,
+    this.borderOpacity,
+    this.svgIconPath,
     required this.onPress,
   });
 
@@ -40,22 +47,33 @@ class SelectButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(radius), // 테두리 반경 설정
             side: borderColor != null
                 ? BorderSide(
-                    color: borderColor!.withOpacity(0.4),
+                    color: borderColor!.withOpacity(borderOpacity!),
                     width: borderWidth!,
                   )
                 : BorderSide.none, // 테두리 설정하지 않음
           ),
           splashFactory: NoSplash.splashFactory, // 스플래시 효과 제거
         ),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 20,
-            letterSpacing: 0.5,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'SF_Pro',
-            color: textColor,
-          ),
+        child: Row(
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: textSize,
+                letterSpacing: 0.5,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'SF_Pro',
+                color: textColor,
+                height: 1.2,
+              ),
+            ),
+            if (svgIconPath != null)
+              const SizedBox(width: 4.0), // 아이콘과 텍스트 사이의 간격
+            if (svgIconPath != null) // 아이콘이 있으면 표시
+              SvgPicture.asset(
+                svgIconPath!,
+              ),
+          ],
         ),
       ),
     );
