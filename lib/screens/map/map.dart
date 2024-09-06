@@ -3,9 +3,19 @@ import 'package:flutter_mow/widgets/search_place.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_svg/svg.dart';
 
-class MapScreen extends StatelessWidget {
-  MapScreen({super.key});
+class MapScreen extends StatefulWidget {
+  const MapScreen({
+    super.key,
+  });
+
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
   final TextEditingController searchController = TextEditingController();
+  String selectedOrder = '거리순'; // Initially set to '거리순'
+  int order = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +66,6 @@ class MapScreen extends StatelessWidget {
                   ),
                   child: ListView(
                     controller: scrollController,
-                    // ***ListView 에도 padding이 있다.***
                     padding: const EdgeInsets.only(top: 4.0),
                     children: [
                       Column(
@@ -65,16 +74,13 @@ class MapScreen extends StatelessWidget {
                         children: [
                           //bottom sheet 바
                           const Bar(),
-                          //빈공간
-                          const SizedBox(
-                            height: 4,
-                          ),
+                          const SizedBox(height: 4),
                           //검색창
-                          Search(searchController: searchController),
-                          //빈공간
-                          const SizedBox(
-                            height: 20,
+                          Search(
+                            searchController: searchController,
+                            order: order,
                           ),
+                          const SizedBox(height: 20),
                           //카테고리 선택
                           Padding(
                             padding:
@@ -100,7 +106,7 @@ class MapScreen extends StatelessWidget {
                                   padding: 14,
                                   bgColor: const Color(0xFFFFFCF8),
                                   radius: 1000,
-                                  text: '거리순',
+                                  text: selectedOrder, // Dynamic button text
                                   textColor: const Color(0xFF6B4D38),
                                   textSize: 14.0,
                                   borderColor: const Color(0xFFAD7541),
@@ -108,7 +114,50 @@ class MapScreen extends StatelessWidget {
                                   borderOpacity: 0.4,
                                   svgIconPath:
                                       'assets/icons/search_place_order_icon.svg',
-                                  onPress: () {},
+                                  onPress: () {
+                                    // ***거리순 클릭시 BottomSheet 올라오게 처리***
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Container(
+                                          decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(25.0),
+                                              topRight: Radius.circular(25.0),
+                                            ),
+                                          ),
+                                          height: 211,
+                                          padding: const EdgeInsets.all(16),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              ListTile(
+                                                title: const Text('거리순'),
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedOrder = '거리순';
+                                                    order = 1;
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                              ListTile(
+                                                title: const Text('별점순'),
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedOrder = '별점순';
+                                                    order = 2;
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
                                 const SizedBoxWidth10(),
                                 SelectButton(
@@ -159,9 +208,11 @@ class Search extends StatelessWidget {
   const Search({
     super.key,
     required this.searchController,
+    required this.order,
   });
 
   final TextEditingController searchController;
+  final int order;
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +224,7 @@ class Search extends StatelessWidget {
             child: SearchPlace(
               borderColor: const Color(0xFF6B4D38),
               controller: searchController,
+              order: order,
             ),
           ),
           const SizedBox(
