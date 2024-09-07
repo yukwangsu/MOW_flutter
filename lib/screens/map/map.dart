@@ -15,7 +15,8 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final TextEditingController searchController = TextEditingController();
   String selectedOrder = '거리순'; // Initially set to '거리순'
-  int order = 0;
+  int order = 1;
+  String locationType = '';
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +24,7 @@ class _MapScreenState extends State<MapScreen> {
 
     return MaterialApp(
       home: Scaffold(
+        // resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
         backgroundColor: Colors.lightGreen,
         body: Stack(
           children: [
@@ -79,6 +81,7 @@ class _MapScreenState extends State<MapScreen> {
                           Search(
                             searchController: searchController,
                             order: order,
+                            locationType: locationType,
                           ),
                           const SizedBox(height: 20),
                           //카테고리 선택
@@ -118,40 +121,24 @@ class _MapScreenState extends State<MapScreen> {
                                     // ***거리순 클릭시 BottomSheet 올라오게 처리***
                                     showModalBottomSheet(
                                       context: context,
+                                      // shape를 사용해서 BorderRadius 설정.
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(25.0),
+                                        ),
+                                      ),
                                       builder: (BuildContext context) {
                                         return Container(
-                                          decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(25.0),
-                                              topRight: Radius.circular(25.0),
-                                            ),
-                                          ),
-                                          height: 211,
-                                          padding: const EdgeInsets.all(16),
+                                          height: 180.0,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0, vertical: 20.0),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              ListTile(
-                                                title: const Text('거리순'),
-                                                onTap: () {
-                                                  setState(() {
-                                                    selectedOrder = '거리순';
-                                                    order = 1;
-                                                  });
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                              ListTile(
-                                                title: const Text('별점순'),
-                                                onTap: () {
-                                                  setState(() {
-                                                    selectedOrder = '별점순';
-                                                    order = 2;
-                                                  });
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
+                                              buildOrderList(context, '거리순', 1),
+                                              const ListBorderLine(), //bottom sheet 경계선
+                                              buildOrderList(context, '별점순', 2),
                                             ],
                                           ),
                                         );
@@ -165,14 +152,49 @@ class _MapScreenState extends State<MapScreen> {
                                   padding: 14,
                                   bgColor: const Color(0xFFFFFCF8),
                                   radius: 1000,
-                                  text: '공간구분',
+                                  text: locationType.isEmpty
+                                      ? '공간구분'
+                                      : locationType,
                                   textColor: const Color(0xFF6B4D38),
                                   textSize: 14.0,
                                   borderColor: const Color(0xFFAD7541),
                                   borderWidth: 1.0,
                                   borderOpacity: 0.4,
                                   svgIconPath: 'assets/icons/down_icon.svg',
-                                  onPress: () {},
+                                  onPress: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      // shape를 사용해서 BorderRadius 설정.
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(25.0),
+                                        ),
+                                      ),
+                                      builder: (BuildContext context) {
+                                        return Container(
+                                          height: 350.0,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0, vertical: 20.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              buildPlaceList(context, '모든 공간'),
+                                              const ListBorderLine(), //bottom sheet 경계선
+                                              buildPlaceList(context, '카페'),
+                                              const ListBorderLine(),
+                                              buildPlaceList(context, '도서관'),
+                                              const ListBorderLine(),
+                                              buildPlaceList(context, '스터디카페'),
+                                              const ListBorderLine(),
+                                              buildPlaceList(
+                                                  context, '기타 작업 공간'),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -186,6 +208,72 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildOrderList(
+      BuildContext context, String listContent, int orderContent) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero, // default Padding을 0으로 설정
+      title: Text(
+        listContent,
+        style: TextStyle(
+          color:
+              (order == orderContent) ? const Color(0xFF6B4D38) : Colors.black,
+          fontSize: 16.0,
+          fontWeight:
+              (order == orderContent) ? FontWeight.w600 : FontWeight.w400,
+        ),
+      ),
+      onTap: () {
+        setState(() {
+          selectedOrder = listContent;
+          order = orderContent;
+        });
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget buildPlaceList(BuildContext context, String listContent) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero, // default Padding을 0으로 설정
+      title: Text(
+        listContent,
+        style: TextStyle(
+          color: (locationType == listContent)
+              ? const Color(0xFF6B4D38)
+              : Colors.black,
+          fontSize: 16.0,
+          fontWeight:
+              (locationType == listContent) ? FontWeight.w600 : FontWeight.w400,
+        ),
+      ),
+      onTap: () {
+        setState(() {
+          locationType = listContent;
+        });
+        //Navigator.of(context).pop()이 ModalBottomSheet 내의 context에만 영향을 주어,
+        //다른 화면으로 돌아가지 않고, ModalBottomSheet만 닫는다.
+        Navigator.of(context).pop();
+      },
+    );
+  }
+}
+
+class ListBorderLine extends StatelessWidget {
+  const ListBorderLine({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      height: 1.0,
+      decoration: const BoxDecoration(
+        color: Color(0xFFE4E3E2),
       ),
     );
   }
@@ -209,10 +297,12 @@ class Search extends StatelessWidget {
     super.key,
     required this.searchController,
     required this.order,
+    required this.locationType,
   });
 
   final TextEditingController searchController;
   final int order;
+  final String locationType;
 
   @override
   Widget build(BuildContext context) {
@@ -225,6 +315,7 @@ class Search extends StatelessWidget {
               borderColor: const Color(0xFF6B4D38),
               controller: searchController,
               order: order,
+              locationType: locationType,
             ),
           ),
           const SizedBox(

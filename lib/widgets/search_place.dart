@@ -6,12 +6,14 @@ class SearchPlace extends StatefulWidget {
   final Color borderColor;
   final TextEditingController controller; //입력값 controller
   final int order;
+  final String locationType;
 
   const SearchPlace({
     super.key,
     required this.borderColor,
     required this.controller,
     required this.order,
+    required this.locationType,
   });
 
   @override
@@ -22,8 +24,8 @@ class _SearchPlaceState extends State<SearchPlace> {
   @override
   Widget build(BuildContext context) {
     //화면이 build되는 순간 데이터를 가져옴
-    Future<List<dynamic>?> result =
-        SearchService.searchPlace(widget.controller.text, widget.order);
+    Future<List<dynamic>?> result = SearchService.searchPlace(
+        widget.controller.text, widget.order, widget.locationType);
     print('----------search result----------');
     print('result: $result');
     print('your keyword: ${widget.controller.text}');
@@ -55,7 +57,7 @@ class _SearchPlaceState extends State<SearchPlace> {
             onTap: () async {
               //await 필수
               List? result = await SearchService.searchPlace(
-                  widget.controller.text, widget.order);
+                  widget.controller.text, widget.order, widget.locationType);
               print('----------search result----------');
               print('result: $result');
               print('your keyword: ${widget.controller.text}');
