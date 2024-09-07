@@ -13,6 +13,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  bool isNormalMode = true;
+  bool isEditMode = false;
   final TextEditingController searchController = TextEditingController();
   String selectedOrder = '거리순'; // Initially set to '거리순'
   int order = 1;
@@ -77,128 +79,8 @@ class _MapScreenState extends State<MapScreen> {
                           //bottom sheet 바
                           const Bar(),
                           const SizedBox(height: 4),
-                          //검색창
-                          Search(
-                            searchController: searchController,
-                            order: order,
-                            locationType: locationType,
-                          ),
-                          const SizedBox(height: 20),
-                          //카테고리 선택
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                              children: [
-                                SelectButton(
-                                  height: 32,
-                                  padding: 14,
-                                  bgColor: const Color(0xFFFFFCF8),
-                                  radius: 1000,
-                                  text: '편집',
-                                  textColor: const Color(0xFF6B4D38),
-                                  textSize: 14.0,
-                                  borderColor: const Color(0xFFAD7541),
-                                  borderWidth: 1.0,
-                                  borderOpacity: 1.0,
-                                  onPress: () {},
-                                ),
-                                const SizedBoxWidth10(),
-                                SelectButton(
-                                  height: 32,
-                                  padding: 14,
-                                  bgColor: const Color(0xFFFFFCF8),
-                                  radius: 1000,
-                                  text: selectedOrder, // Dynamic button text
-                                  textColor: const Color(0xFF6B4D38),
-                                  textSize: 14.0,
-                                  borderColor: const Color(0xFFAD7541),
-                                  borderWidth: 1.0,
-                                  borderOpacity: 0.4,
-                                  svgIconPath:
-                                      'assets/icons/search_place_order_icon.svg',
-                                  onPress: () {
-                                    // ***거리순 클릭시 BottomSheet 올라오게 처리***
-                                    showModalBottomSheet(
-                                      context: context,
-                                      // shape를 사용해서 BorderRadius 설정.
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      builder: (BuildContext context) {
-                                        return Container(
-                                          height: 180.0,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20.0, vertical: 20.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              buildOrderList(context, '거리순', 1),
-                                              const ListBorderLine(), //bottom sheet 경계선
-                                              buildOrderList(context, '별점순', 2),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                                const SizedBoxWidth10(),
-                                SelectButton(
-                                  height: 32,
-                                  padding: 14,
-                                  bgColor: const Color(0xFFFFFCF8),
-                                  radius: 1000,
-                                  text: locationType.isEmpty
-                                      ? '공간구분'
-                                      : locationType,
-                                  textColor: const Color(0xFF6B4D38),
-                                  textSize: 14.0,
-                                  borderColor: const Color(0xFFAD7541),
-                                  borderWidth: 1.0,
-                                  borderOpacity: 0.4,
-                                  svgIconPath: 'assets/icons/down_icon.svg',
-                                  onPress: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      // shape를 사용해서 BorderRadius 설정.
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      builder: (BuildContext context) {
-                                        return Container(
-                                          height: 350.0,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20.0, vertical: 20.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              buildPlaceList(context, '모든 공간'),
-                                              const ListBorderLine(), //bottom sheet 경계선
-                                              buildPlaceList(context, '카페'),
-                                              const ListBorderLine(),
-                                              buildPlaceList(context, '도서관'),
-                                              const ListBorderLine(),
-                                              buildPlaceList(context, '스터디카페'),
-                                              const ListBorderLine(),
-                                              buildPlaceList(
-                                                  context, '기타 작업 공간'),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
+                          //DraggableScrollableSheet 내용
+                          isNormalMode ? buildNormalMode() : buildEditMode(),
                         ],
                       ),
                     ],
@@ -208,6 +90,307 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildNormalMode() {
+    return Column(
+      children: [
+        //검색창
+        Search(
+          searchController: searchController,
+          order: order,
+          locationType: locationType,
+        ),
+        const SizedBox(height: 20),
+        //카테고리 선택
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            children: [
+              SelectButton(
+                height: 32,
+                padding: 14,
+                bgColor: const Color(0xFFFFFCF8),
+                radius: 1000,
+                text: '편집',
+                textColor: const Color(0xFF6B4D38),
+                textSize: 14.0,
+                borderColor: const Color(0xFFAD7541),
+                borderWidth: 1.0,
+                borderOpacity: 1.0,
+                onPress: () {
+                  setState(() {
+                    isNormalMode = false;
+                    isEditMode = true;
+                  });
+                },
+              ),
+              const SizedBoxWidth10(),
+              SelectButton(
+                height: 32,
+                padding: 14,
+                bgColor: const Color(0xFFFFFCF8),
+                radius: 1000,
+                text: selectedOrder, // Dynamic button text
+                textColor: const Color(0xFF6B4D38),
+                textSize: 14.0,
+                borderColor: const Color(0xFFAD7541),
+                borderWidth: 1.0,
+                borderOpacity: 0.4,
+                svgIconPath: 'assets/icons/search_place_order_icon.svg',
+                onPress: () {
+                  // ***거리순 클릭시 BottomSheet 올라오게 처리***
+                  showModalBottomSheet(
+                    context: context,
+                    // shape를 사용해서 BorderRadius 설정.
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(25.0),
+                      ),
+                    ),
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: 180.0,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildOrderList(context, '거리순', 1),
+                            const ListBorderLine(), //bottom sheet 경계선
+                            buildOrderList(context, '별점순', 2),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBoxWidth10(),
+              SelectButton(
+                height: 32,
+                padding: 14,
+                bgColor: const Color(0xFFFFFCF8),
+                radius: 1000,
+                text: locationType.isEmpty ? '공간구분' : locationType,
+                textColor: const Color(0xFF6B4D38),
+                textSize: 14.0,
+                borderColor: const Color(0xFFAD7541),
+                borderWidth: 1.0,
+                borderOpacity: 0.4,
+                svgIconPath: 'assets/icons/down_icon.svg',
+                onPress: () {
+                  showModalBottomSheet(
+                    context: context,
+                    // shape를 사용해서 BorderRadius 설정.
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(25.0),
+                      ),
+                    ),
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: 350.0,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildPlaceList(context, '모든 공간'),
+                            const ListBorderLine(), //bottom sheet 경계선
+                            buildPlaceList(context, '카페'),
+                            const ListBorderLine(),
+                            buildPlaceList(context, '도서관'),
+                            const ListBorderLine(),
+                            buildPlaceList(context, '스터디카페'),
+                            const ListBorderLine(),
+                            buildPlaceList(context, '기타 작업 공간'),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildEditMode() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 10.0,
+          ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isNormalMode = true;
+                    isEditMode = false;
+                  });
+                },
+                child: SvgPicture.asset('assets/icons/back_icon.svg'),
+              ),
+            ],
+          ), //돌아가기 아이콘
+          const SizedBox(
+            height: 28.0,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            child: Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '태그 편집',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 12.0,
+                    ),
+                    Text(
+                      '검색에 이용할 태그들을 선택해주세요!',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 48.0,
+          ),
+          const Row(
+            children: [
+              SelectButtonWidget(
+                textContent: '# 공간이 넓어요',
+              ),
+              //버튼 사이 빈 공간
+              SizedBoxWidth6(),
+              SelectButtonWidget(
+                textContent: '# 좌석이 많아요',
+              ),
+            ],
+          ),
+          const SizedBoxHeight10(),
+          const Row(
+            children: [
+              SelectButtonWidget(
+                textContent: '# 콘센트가 많아요',
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 16.0,
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  '작업 편의',
+                  style: TextStyle(
+                    fontSize: 16, //임의 수정
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SvgPicture.asset('assets/icons/dropdown_up.svg'),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    SelectButtonWidget(
+                      textContent: '# 한산해요',
+                    ),
+                    SizedBoxWidth6(),
+                    SelectButtonWidget(
+                      textContent: '# 의자가 편해요',
+                    ),
+                  ],
+                ),
+                SizedBoxHeight10(),
+                Row(
+                  children: [
+                    SelectButtonWidget(
+                      textContent: '# 책상이 넓어요',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  '분위기',
+                  style: TextStyle(
+                    fontSize: 16, //임의 수정
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SvgPicture.asset('assets/icons/dropdown_up.svg'),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    SelectButtonWidget(
+                      textContent: '# 뷰가 좋아요',
+                    ),
+                    SizedBoxWidth6(),
+                    SelectButtonWidget(
+                      textContent: '# 조용해요',
+                    ),
+                  ],
+                ),
+                SizedBoxHeight10(),
+                Row(
+                  children: [
+                    SelectButtonWidget(
+                      textContent: '# 뷰가 좋아요',
+                    ),
+                    SizedBoxWidth6(),
+                    SelectButtonWidget(
+                      textContent: '# 조용해요',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -262,6 +445,32 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
+class SelectButtonWidget extends StatelessWidget {
+  const SelectButtonWidget({
+    super.key,
+    required this.textContent,
+  });
+
+  final String textContent;
+
+  @override
+  Widget build(BuildContext context) {
+    return SelectButton(
+      height: 32.0,
+      padding: 14.0,
+      bgColor: Colors.white,
+      radius: 1000,
+      text: textContent,
+      textColor: const Color(0xFF6B4D38),
+      textSize: 14.0,
+      borderWidth: 1.0,
+      borderColor: const Color(0xFFAD7541),
+      borderOpacity: 0.4,
+      onPress: () {},
+    );
+  }
+}
+
 class ListBorderLine extends StatelessWidget {
   const ListBorderLine({
     super.key,
@@ -288,6 +497,32 @@ class SizedBoxWidth10 extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       width: 10.0,
+    );
+  }
+}
+
+class SizedBoxHeight10 extends StatelessWidget {
+  const SizedBoxHeight10({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 10.0,
+    );
+  }
+}
+
+class SizedBoxWidth6 extends StatelessWidget {
+  const SizedBoxWidth6({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 6.0,
     );
   }
 }
