@@ -24,72 +24,59 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height; //화면 높이
 
-    return MaterialApp(
-      home: Scaffold(
-        // resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
-        backgroundColor: Colors.lightGreen,
-        body: Stack(
-          children: [
-            //추후 지도 화면으로 수정 필요
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset('assets/icons/login_cat.svg'),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  const Text('지도 준비중 ...')
-                ],
-              ),
+    return Scaffold(
+      // resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
+      backgroundColor: Colors.lightGreen,
+      body: Stack(
+        children: [
+          //추후 지도 화면으로 수정 필요
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset('assets/icons/login_cat.svg'),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Text('지도 준비중 ...')
+              ],
             ),
-            DraggableScrollableSheet(
-              initialChildSize: 132 / screenHeight, // 초기 크기를 132px로 설정
-              minChildSize: 132 / screenHeight, // 최소 크기를 132px로 설정
-              maxChildSize: 0.936, // 최대 크기
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: const Color(0xFFE4E3E2), // 경계선 색상
-                      width: 1.0, // 경계선 두께
-                    ),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(25.0),
-                      topRight: Radius.circular(25.0),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 5.0,
-                        offset: const Offset(0, -4),
-                      ),
-                    ],
+          ),
+          DraggableScrollableSheet(
+            initialChildSize: 132 / screenHeight, // 초기 크기를 132px로 설정
+            minChildSize: 132 / screenHeight, // 최소 크기를 132px로 설정
+            maxChildSize: 0.936, // 최대 크기
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: const Color(0xFFE4E3E2), // 경계선 색상
+                    width: 1.0, // 경계선 두께
                   ),
-                  child: ListView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.only(top: 4.0),
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          //bottom sheet 바
-                          const Bar(),
-                          const SizedBox(height: 4),
-                          //DraggableScrollableSheet 내용
-                          isNormalMode ? buildNormalMode() : buildEditMode(),
-                        ],
-                      ),
-                    ],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(25.0),
+                    topRight: Radius.circular(25.0),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 5.0,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.only(top: 4.0),
+                  children: [
+                    isNormalMode ? buildNormalMode() : buildEditMode(),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -97,6 +84,9 @@ class _MapScreenState extends State<MapScreen> {
   Widget buildNormalMode() {
     return Column(
       children: [
+        //bottom sheet 바
+        const Bar(),
+        const SizedBox(height: 4),
         //검색창
         Search(
           searchController: searchController,
@@ -227,10 +217,17 @@ class _MapScreenState extends State<MapScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 10.0,
+          //bottom sheet 바
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Bar(),
+            ],
           ),
-          Row(
+          const SizedBox(height: 4),
+          const SizedBoxHeight10(),
+          Column(
+            //돌아가기 아이콘
             children: [
               GestureDetector(
                 onTap: () {
@@ -242,150 +239,379 @@ class _MapScreenState extends State<MapScreen> {
                 child: SvgPicture.asset('assets/icons/back_icon.svg'),
               ),
             ],
-          ), //돌아가기 아이콘
-          const SizedBox(
-            height: 28.0,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.0),
-            child: Row(
+          // 스크롤 시작 부분 *** 실패 ***
+          SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '태그 편집',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 12.0,
-                    ),
-                    Text(
-                      '검색에 이용할 태그들을 선택해주세요!',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
+                const SizedBox(
+                  height: 28.0,
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 48.0,
-          ),
-          const Row(
-            children: [
-              SelectButtonWidget(
-                textContent: '# 공간이 넓어요',
-              ),
-              //버튼 사이 빈 공간
-              SizedBoxWidth6(),
-              SelectButtonWidget(
-                textContent: '# 좌석이 많아요',
-              ),
-            ],
-          ),
-          const SizedBoxHeight10(),
-          const Row(
-            children: [
-              SelectButtonWidget(
-                textContent: '# 콘센트가 많아요',
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 16.0,
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  '작업 편의',
-                  style: TextStyle(
-                    fontSize: 16, //임의 수정
-                    fontWeight: FontWeight.bold,
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '태그 편집',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12.0,
+                          ),
+                          Text(
+                            '검색에 이용할 태그들을 선택해주세요!',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                SvgPicture.asset('assets/icons/dropdown_up.svg'),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-            child: Column(
-              children: [
-                Row(
+                const SizedBox(
+                  height: 48.0,
+                ),
+                const Row(
                   children: [
-                    SelectButtonWidget(
-                      textContent: '# 한산해요',
-                    ),
-                    SizedBoxWidth6(),
-                    SelectButtonWidget(
-                      textContent: '# 의자가 편해요',
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            SelectButtonWidget(
+                              textContent: '# 공간이 넓어요',
+                            ),
+                            //버튼 사이 빈 공간
+                            SizedBoxWidth6(),
+                            SelectButtonWidget(
+                              textContent: '# 좌석이 많아요',
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                SizedBoxHeight10(),
-                Row(
+                const SizedBoxHeight10(),
+                const Row(
                   children: [
                     SelectButtonWidget(
-                      textContent: '# 책상이 넓어요',
+                      textContent: '# 콘센트가 많아요',
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  '분위기',
-                  style: TextStyle(
-                    fontSize: 16, //임의 수정
-                    fontWeight: FontWeight.bold,
+                const SizedBox(
+                  height: 16.0,
+                ),
+                // 작업 편의 tab
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 12.0, bottom: 12.0, right: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '작업 편의',
+                        style: TextStyle(
+                          fontSize: 16, //임의 수정
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
+                    ],
                   ),
                 ),
-                SvgPicture.asset('assets/icons/dropdown_up.svg'),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    SelectButtonWidget(
-                      textContent: '# 뷰가 좋아요',
-                    ),
-                    SizedBoxWidth6(),
-                    SelectButtonWidget(
-                      textContent: '# 조용해요',
-                    ),
-                  ],
+                // 작업 편의 tags
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  SelectButtonWidget(
+                                    textContent: '# 한산해요',
+                                  ),
+                                  SizedBoxWidth6(),
+                                  SelectButtonWidget(
+                                    textContent: '# 의자가 편해요',
+                                  ),
+                                  SizedBoxWidth6(),
+                                  SelectButtonWidget(
+                                    textContent: '# 책상이 넓어요',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBoxHeight10(),
-                Row(
-                  children: [
-                    SelectButtonWidget(
-                      textContent: '# 뷰가 좋아요',
-                    ),
-                    SizedBoxWidth6(),
-                    SelectButtonWidget(
-                      textContent: '# 조용해요',
-                    ),
-                  ],
+                // 분위기 tab
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 12.0, bottom: 12.0, right: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '분위기',
+                        style: TextStyle(
+                          fontSize: 16, //임의 수정
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
+                    ],
+                  ),
+                ),
+                // 분위기 tags
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 뷰가 좋아요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 조용해요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 아늑해요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 인테리어가 깔끔해요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 어두워요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 밝아요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 다시 오고 싶어요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 음악이 좋아요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 대화하기 좋아요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 감각적이에요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 혼자 작업하기 좋아요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 회의하기에 좋아요',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // 메뉴 tab
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 12.0, bottom: 12.0, right: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '메뉴',
+                        style: TextStyle(
+                          fontSize: 16, //임의 수정
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
+                    ],
+                  ),
+                ),
+                // 메뉴 tags
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 저렴해요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 매뉴가 다양해요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 커피가 맛있어요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 디저트가 맛있어요',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // 서비스 tab
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 12.0, bottom: 12.0, right: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '서비스',
+                        style: TextStyle(
+                          fontSize: 16, //임의 수정
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
+                    ],
+                  ),
+                ),
+                // 서비스 tags
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 친절해요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 와이파이가 잘 터져요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 에어컨이 잘 나와요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 오래 작업하기 좋아요',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // 기타 tab
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 12.0, bottom: 12.0, right: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '기타',
+                        style: TextStyle(
+                          fontSize: 16, //임의 수정
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
+                    ],
+                  ),
+                ),
+                // 기타 tags
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 화장실이 깨끗해요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 찾아가기 편해요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 무료로 이용이 가능해요',
+                          ),
+                          SizedBoxWidth6(),
+                          SelectButtonWidget(
+                            textContent: '# 주차가 가능해요',
+                          ),
+                        ],
+                      ),
+                      SizedBoxHeight10(),
+                      Row(
+                        children: [
+                          SelectButtonWidget(
+                            textContent: '# 24시간 운영이에요',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
