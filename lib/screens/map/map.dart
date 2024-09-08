@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mow/screens/map/edit_tag.dart';
 import 'package:flutter_mow/widgets/search_place.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,8 +14,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  bool isNormalMode = true;
-  bool isEditMode = false;
+  // bool isNormalMode = true;
+  // bool isEditMode = false;
   final TextEditingController searchController = TextEditingController();
   String selectedOrder = '거리순'; // Initially set to '거리순'
   int order = 1;
@@ -70,7 +71,7 @@ class _MapScreenState extends State<MapScreen> {
                   controller: scrollController,
                   padding: const EdgeInsets.only(top: 4.0),
                   children: [
-                    isNormalMode ? buildNormalMode() : buildEditMode(),
+                    buildNormalMode(),
                   ],
                 ),
               );
@@ -111,10 +112,12 @@ class _MapScreenState extends State<MapScreen> {
                 borderWidth: 1.0,
                 borderOpacity: 1.0,
                 onPress: () {
-                  setState(() {
-                    isNormalMode = false;
-                    isEditMode = true;
-                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditTag(),
+                    ),
+                  );
                 },
               ),
               const SizedBoxWidth10(),
@@ -211,415 +214,415 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget buildEditMode() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //bottom sheet 바
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Bar(),
-            ],
-          ),
-          const SizedBox(height: 4),
-          const SizedBoxHeight10(),
-          Column(
-            //돌아가기 아이콘
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isNormalMode = true;
-                    isEditMode = false;
-                  });
-                },
-                child: SvgPicture.asset('assets/icons/back_icon.svg'),
-              ),
-            ],
-          ),
-          // 스크롤 시작 부분 *** 실패 ***
-          SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  height: 28.0,
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '태그 편집',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 12.0,
-                          ),
-                          Text(
-                            '검색에 이용할 태그들을 선택해주세요!',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 48.0,
-                ),
-                const Row(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            SelectButtonWidget(
-                              textContent: '# 공간이 넓어요',
-                            ),
-                            //버튼 사이 빈 공간
-                            SizedBoxWidth6(),
-                            SelectButtonWidget(
-                              textContent: '# 좌석이 많아요',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBoxHeight10(),
-                const Row(
-                  children: [
-                    SelectButtonWidget(
-                      textContent: '# 콘센트가 많아요',
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 16.0,
-                ),
-                // 작업 편의 tab
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 12.0, bottom: 12.0, right: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '작업 편의',
-                        style: TextStyle(
-                          fontSize: 16, //임의 수정
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
-                    ],
-                  ),
-                ),
-                // 작업 편의 tags
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  SelectButtonWidget(
-                                    textContent: '# 한산해요',
-                                  ),
-                                  SizedBoxWidth6(),
-                                  SelectButtonWidget(
-                                    textContent: '# 의자가 편해요',
-                                  ),
-                                  SizedBoxWidth6(),
-                                  SelectButtonWidget(
-                                    textContent: '# 책상이 넓어요',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // 분위기 tab
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 12.0, bottom: 12.0, right: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '분위기',
-                        style: TextStyle(
-                          fontSize: 16, //임의 수정
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
-                    ],
-                  ),
-                ),
-                // 분위기 tags
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 뷰가 좋아요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 조용해요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 아늑해요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 인테리어가 깔끔해요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 어두워요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 밝아요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 다시 오고 싶어요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 음악이 좋아요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 대화하기 좋아요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 감각적이에요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 혼자 작업하기 좋아요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 회의하기에 좋아요',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // 메뉴 tab
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 12.0, bottom: 12.0, right: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '메뉴',
-                        style: TextStyle(
-                          fontSize: 16, //임의 수정
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
-                    ],
-                  ),
-                ),
-                // 메뉴 tags
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 저렴해요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 매뉴가 다양해요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 커피가 맛있어요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 디저트가 맛있어요',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // 서비스 tab
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 12.0, bottom: 12.0, right: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '서비스',
-                        style: TextStyle(
-                          fontSize: 16, //임의 수정
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
-                    ],
-                  ),
-                ),
-                // 서비스 tags
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 친절해요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 와이파이가 잘 터져요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 에어컨이 잘 나와요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 오래 작업하기 좋아요',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // 기타 tab
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 12.0, bottom: 12.0, right: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '기타',
-                        style: TextStyle(
-                          fontSize: 16, //임의 수정
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SvgPicture.asset('assets/icons/dropdown_up.svg'),
-                    ],
-                  ),
-                ),
-                // 기타 tags
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 화장실이 깨끗해요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 찾아가기 편해요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 무료로 이용이 가능해요',
-                          ),
-                          SizedBoxWidth6(),
-                          SelectButtonWidget(
-                            textContent: '# 주차가 가능해요',
-                          ),
-                        ],
-                      ),
-                      SizedBoxHeight10(),
-                      Row(
-                        children: [
-                          SelectButtonWidget(
-                            textContent: '# 24시간 운영이에요',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget buildEditMode() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         //bottom sheet 바
+  //         const Row(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Bar(),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 4),
+  //         const SizedBoxHeight10(),
+  //         Column(
+  //           //돌아가기 아이콘
+  //           children: [
+  //             GestureDetector(
+  //               onTap: () {
+  //                 setState(() {
+  //                   isNormalMode = true;
+  //                   isEditMode = false;
+  //                 });
+  //               },
+  //               child: SvgPicture.asset('assets/icons/back_icon.svg'),
+  //             ),
+  //           ],
+  //         ),
+  //         // 스크롤 시작 부분 *** 실패 ***
+  //         SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               const SizedBox(
+  //                 height: 28.0,
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.symmetric(horizontal: 4.0),
+  //                 child: Row(
+  //                   children: [
+  //                     Column(
+  //                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                       children: [
+  //                         Text(
+  //                           '태그 편집',
+  //                           style: TextStyle(
+  //                             fontSize: 22,
+  //                             fontWeight: FontWeight.bold,
+  //                           ),
+  //                         ),
+  //                         SizedBox(
+  //                           height: 12.0,
+  //                         ),
+  //                         Text(
+  //                           '검색에 이용할 태그들을 선택해주세요!',
+  //                           style: TextStyle(
+  //                             fontSize: 16,
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               const SizedBox(
+  //                 height: 48.0,
+  //               ),
+  //               const Row(
+  //                 children: [
+  //                   Expanded(
+  //                     child: SingleChildScrollView(
+  //                       scrollDirection: Axis.horizontal,
+  //                       child: Row(
+  //                         children: [
+  //                           SelectButtonWidget(
+  //                             textContent: '# 공간이 넓어요',
+  //                           ),
+  //                           //버튼 사이 빈 공간
+  //                           SizedBoxWidth6(),
+  //                           SelectButtonWidget(
+  //                             textContent: '# 좌석이 많아요',
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //               const SizedBoxHeight10(),
+  //               const Row(
+  //                 children: [
+  //                   SelectButtonWidget(
+  //                     textContent: '# 콘센트가 많아요',
+  //                   ),
+  //                 ],
+  //               ),
+  //               const SizedBox(
+  //                 height: 16.0,
+  //               ),
+  //               // 작업 편의 tab
+  //               Padding(
+  //                 padding: const EdgeInsets.only(
+  //                     top: 12.0, bottom: 12.0, right: 12.0),
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     const Text(
+  //                       '작업 편의',
+  //                       style: TextStyle(
+  //                         fontSize: 16, //임의 수정
+  //                         fontWeight: FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 작업 편의 tags
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+  //                 child: Column(
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         Expanded(
+  //                           child: SingleChildScrollView(
+  //                             scrollDirection: Axis.horizontal,
+  //                             child: Row(
+  //                               children: [
+  //                                 SelectButtonWidget(
+  //                                   textContent: '# 한산해요',
+  //                                 ),
+  //                                 SizedBoxWidth6(),
+  //                                 SelectButtonWidget(
+  //                                   textContent: '# 의자가 편해요',
+  //                                 ),
+  //                                 SizedBoxWidth6(),
+  //                                 SelectButtonWidget(
+  //                                   textContent: '# 책상이 넓어요',
+  //                                 ),
+  //                               ],
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 분위기 tab
+  //               Padding(
+  //                 padding: const EdgeInsets.only(
+  //                     top: 12.0, bottom: 12.0, right: 12.0),
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     const Text(
+  //                       '분위기',
+  //                       style: TextStyle(
+  //                         fontSize: 16, //임의 수정
+  //                         fontWeight: FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 분위기 tags
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+  //                 child: Column(
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 뷰가 좋아요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 조용해요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 아늑해요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 인테리어가 깔끔해요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 어두워요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 밝아요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 다시 오고 싶어요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 음악이 좋아요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 대화하기 좋아요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 감각적이에요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 혼자 작업하기 좋아요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 회의하기에 좋아요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 메뉴 tab
+  //               Padding(
+  //                 padding: const EdgeInsets.only(
+  //                     top: 12.0, bottom: 12.0, right: 12.0),
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     const Text(
+  //                       '메뉴',
+  //                       style: TextStyle(
+  //                         fontSize: 16, //임의 수정
+  //                         fontWeight: FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 메뉴 tags
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+  //                 child: Column(
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 저렴해요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 매뉴가 다양해요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 커피가 맛있어요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 디저트가 맛있어요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 서비스 tab
+  //               Padding(
+  //                 padding: const EdgeInsets.only(
+  //                     top: 12.0, bottom: 12.0, right: 12.0),
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     const Text(
+  //                       '서비스',
+  //                       style: TextStyle(
+  //                         fontSize: 16, //임의 수정
+  //                         fontWeight: FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 서비스 tags
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+  //                 child: Column(
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 친절해요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 와이파이가 잘 터져요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 에어컨이 잘 나와요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 오래 작업하기 좋아요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 기타 tab
+  //               Padding(
+  //                 padding: const EdgeInsets.only(
+  //                     top: 12.0, bottom: 12.0, right: 12.0),
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     const Text(
+  //                       '기타',
+  //                       style: TextStyle(
+  //                         fontSize: 16, //임의 수정
+  //                         fontWeight: FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
+  //                   ],
+  //                 ),
+  //               ),
+  //               // 기타 tags
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+  //                 child: Column(
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 화장실이 깨끗해요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 찾아가기 편해요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 무료로 이용이 가능해요',
+  //                         ),
+  //                         SizedBoxWidth6(),
+  //                         SelectButtonWidget(
+  //                           textContent: '# 주차가 가능해요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBoxHeight10(),
+  //                     Row(
+  //                       children: [
+  //                         SelectButtonWidget(
+  //                           textContent: '# 24시간 운영이에요',
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget buildOrderList(
       BuildContext context, String listContent, int orderContent) {
