@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditTag extends StatefulWidget {
   const EditTag({
@@ -16,6 +17,27 @@ class _EditTagState extends State<EditTag> {
   List<bool> isTagOpen = [false, false, false, false, false];
   List<String> taggedList = [];
 
+  @override
+  void initState() {
+    super.initState();
+    loadTaggedList(); // 앱 시작 시 태그 리스트를 불러옴
+  }
+
+  // 태그 리스트 저장
+  Future<void> saveTaggedList() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('taggedList', taggedList);
+  }
+
+  // 태그 리스트 불러오기
+  Future<void> loadTaggedList() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      taggedList =
+          prefs.getStringList('taggedList') ?? []; // 저장된 리스트가 없으면 빈 리스트 사용
+    });
+  }
+
   // tag 선택시 사용되는 함수
   void toogleTag(String tagContent) {
     setState(() {
@@ -24,6 +46,8 @@ class _EditTagState extends State<EditTag> {
       } else {
         taggedList.add(tagContent);
       }
+      // 스토리지에 저장
+      saveTaggedList();
     });
   }
 
