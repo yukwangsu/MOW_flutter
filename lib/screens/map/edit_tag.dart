@@ -14,6 +14,19 @@ class EditTag extends StatefulWidget {
 
 class _EditTagState extends State<EditTag> {
   List<bool> isTagOpen = [false, false, false, false, false];
+  List<String> taggedList = [];
+
+  // tag 선택시 사용되는 함수
+  void toogleTag(String tagContent) {
+    setState(() {
+      if (taggedList.contains(tagContent)) {
+        taggedList.remove(tagContent);
+      } else {
+        taggedList.add(tagContent);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,74 +84,83 @@ class _EditTagState extends State<EditTag> {
                     const SizedBox(
                       height: 24.0,
                     ),
-                    const TagListWidget(
-                      tagContent1: '# 공간이 넓어요',
-                      tagContent2: '# 좌석이 많아요',
+                    tagListWidget(
+                      '# 공간이 넓어요',
+                      '# 좌석이 많아요',
+                      null,
                     ),
                     const SizedBoxHeight10(),
-                    const TagListWidget(
-                      tagContent1: '# 콘센트가 많아요',
+                    tagListWidget(
+                      '# 콘센트가 많아요',
+                      null,
+                      null,
                     ),
                     const SizedBox(
                       height: 16.0,
                     ),
 
                     // 작업 편의 tab
-                    tagTitle(
+                    tagTitleWidget(
                       '작업 편의',
                       0,
                     ),
                     // 작업 편의 tags
                     if (isTagOpen[0]) ...[
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                        child: TagListWidget(
-                          tagContent1: '# 한산해요',
-                          tagContent2: '# 의자가 편해요',
-                          tagContent3: '# 책상이 넓어요',
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
+                        child: tagListWidget(
+                          '# 한산해요',
+                          '# 의자가 편해요',
+                          '# 책상이 넓어요',
                         ),
                       ),
                     ],
 
                     // 분위기 tab
-                    tagTitle(
+                    tagTitleWidget(
                       '분위기',
                       1,
                     ),
                     // 분위기 tags
                     if (isTagOpen[1]) ...[
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
                         child: Column(
                           children: [
-                            TagListWidget(
-                              tagContent1: '# 뷰가 좋아요',
-                              tagContent2: '# 조용해요',
+                            tagListWidget(
+                              '# 뷰가 좋아요',
+                              '# 조용해요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 아늑해요',
-                              tagContent2: '# 인테리어가 깔끔해요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 아늑해요',
+                              '# 인테리어가 깔끔해요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 어두워요',
-                              tagContent2: '# 밝아요',
-                              tagContent3: '# 다시 오고 싶어요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 어두워요',
+                              '# 밝아요',
+                              '# 다시 오고 싶어요',
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 음악이 좋아요',
-                              tagContent2: '# 대화하기 좋아요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 음악이 좋아요',
+                              '# 대화하기 좋아요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 감각적이에요',
-                              tagContent2: '# 혼자 작업하기 좋아요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 감각적이에요',
+                              '# 혼자 작업하기 좋아요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 회의하기에 좋아요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 회의하기에 좋아요',
+                              null,
+                              null,
                             ),
                           ],
                         ),
@@ -146,24 +168,26 @@ class _EditTagState extends State<EditTag> {
                     ],
 
                     // 메뉴 tab
-                    tagTitle(
+                    tagTitleWidget(
                       '메뉴',
                       2,
                     ),
                     // 메뉴 tags
                     if (isTagOpen[2]) ...[
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
                         child: Column(
                           children: [
-                            TagListWidget(
-                              tagContent1: '# 저렴해요',
-                              tagContent2: '# 매뉴가 다양해요',
+                            tagListWidget(
+                              '# 저렴해요',
+                              '# 매뉴가 다양해요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 커피가 맛있어요',
-                              tagContent2: '# 디저트가 맛있어요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 커피가 맛있어요',
+                              '# 디저트가 맛있어요',
+                              null,
                             ),
                           ],
                         ),
@@ -171,24 +195,26 @@ class _EditTagState extends State<EditTag> {
                     ],
 
                     // 서비스 tab
-                    tagTitle(
+                    tagTitleWidget(
                       '서비스',
                       3,
                     ),
                     // 서비스 tags
                     if (isTagOpen[3]) ...[
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
                         child: Column(
                           children: [
-                            TagListWidget(
-                              tagContent1: '# 친절해요',
-                              tagContent2: '# 와이파이가 잘 터져요',
+                            tagListWidget(
+                              '# 친절해요',
+                              '# 와이파이가 잘 터져요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 에어컨이 잘 나와요',
-                              tagContent2: '# 오래 작업하기 좋아요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 에어컨이 잘 나와요',
+                              '# 오래 작업하기 좋아요',
+                              null,
                             ),
                           ],
                         ),
@@ -196,28 +222,32 @@ class _EditTagState extends State<EditTag> {
                     ],
 
                     // 기타 tab
-                    tagTitle(
+                    tagTitleWidget(
                       '기타',
                       4,
                     ),
                     // 기타 tags
                     if (isTagOpen[4]) ...[
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
                         child: Column(
                           children: [
-                            TagListWidget(
-                              tagContent1: '# 화장실이 깨끗해요',
-                              tagContent2: '# 찾아가기 편해요',
+                            tagListWidget(
+                              '# 화장실이 깨끗해요',
+                              '# 찾아가기 편해요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 무료로 이용이 가능해요',
-                              tagContent2: '# 주차가 가능해요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 무료로 이용이 가능해요',
+                              '# 주차가 가능해요',
+                              null,
                             ),
-                            SizedBoxHeight10(),
-                            TagListWidget(
-                              tagContent1: '# 24시간 운영이에요',
+                            const SizedBoxHeight10(),
+                            tagListWidget(
+                              '# 24시간 운영이에요',
+                              null,
+                              null,
                             ),
                           ],
                         ),
@@ -238,7 +268,7 @@ class _EditTagState extends State<EditTag> {
     );
   }
 
-  Widget tagTitle(String title, int numberOfTag) {
+  Widget tagTitleWidget(String title, int numberOfTag) {
     return Padding(
       padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
       child: Row(
@@ -265,52 +295,9 @@ class _EditTagState extends State<EditTag> {
       ),
     );
   }
-}
 
-class TagTitle extends StatelessWidget {
-  const TagTitle({
-    super.key,
-    required this.title,
-  });
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16, //임의 수정
-
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SvgPicture.asset('assets/icons/dropdown_up.svg'),
-        ],
-      ),
-    );
-  }
-}
-
-class TagListWidget extends StatelessWidget {
-  const TagListWidget({
-    super.key,
-    required this.tagContent1,
-    this.tagContent2,
-    this.tagContent3,
-  });
-
-  final String tagContent1;
-  final String? tagContent2;
-  final String? tagContent3;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget tagListWidget(
+      String tagContent1, String? tagContent2, String? tagContent3) {
     return Column(
       children: [
         Row(
@@ -321,20 +308,20 @@ class TagListWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     // tag Content 1
-                    SelectButtonWidget(
-                      textContent: tagContent1,
+                    selectButtonWidget(
+                      tagContent1,
                     ),
                     if (tagContent2 != null) ...[
                       const SizedBoxWidth6(),
                       // tag Content 2
-                      SelectButtonWidget(
-                        textContent: tagContent2!,
+                      selectButtonWidget(
+                        tagContent2,
                       ),
                       if (tagContent3 != null) ...[
                         const SizedBoxWidth6(),
                         // tag Content 3
-                        SelectButtonWidget(
-                          textContent: tagContent3!,
+                        selectButtonWidget(
+                          tagContent3,
                         ),
                       ]
                     ]
@@ -347,30 +334,27 @@ class TagListWidget extends StatelessWidget {
       ],
     );
   }
-}
 
-class SelectButtonWidget extends StatelessWidget {
-  const SelectButtonWidget({
-    super.key,
-    required this.textContent,
-  });
-
-  final String textContent;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget selectButtonWidget(String textContent) {
     return SelectButton(
       height: 32.0,
       padding: 14.0,
-      bgColor: Colors.white,
+      bgColor: taggedList.contains(textContent)
+          ? const Color(0xFF6B4D38)
+          : Colors.white,
       radius: 1000,
       text: textContent,
-      textColor: const Color(0xFF6B4D38),
+      textColor: taggedList.contains(textContent)
+          ? Colors.white
+          : const Color(0xFF6B4D38),
       textSize: 14.0,
-      borderWidth: 1.0,
-      borderColor: const Color(0xFFAD7541),
-      borderOpacity: 0.4,
-      onPress: () {},
+      borderWidth: taggedList.contains(textContent) ? null : 1.0,
+      borderColor:
+          taggedList.contains(textContent) ? null : const Color(0xFFAD7541),
+      borderOpacity: taggedList.contains(textContent) ? null : 0.4,
+      onPress: () {
+        toogleTag(textContent);
+      },
     );
   }
 }
