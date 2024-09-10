@@ -3,22 +3,28 @@ import 'package:flutter_mow/widgets/appbar_back.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_svg/svg.dart';
 
-class EditTag extends StatelessWidget {
+class EditTag extends StatefulWidget {
   const EditTag({
     super.key,
   });
 
   @override
+  State<EditTag> createState() => _EditTagState();
+}
+
+class _EditTagState extends State<EditTag> {
+  List<bool> isTagOpen = [false, false, false, false, false];
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppbarBack(),
+      appBar: const AppbarBack(),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
@@ -62,154 +68,164 @@ class EditTag extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 24.0,
                     ),
-                    TagListWidget(
+                    const TagListWidget(
                       tagContent1: '# 공간이 넓어요',
                       tagContent2: '# 좌석이 많아요',
                     ),
-                    SizedBoxHeight10(),
-                    TagListWidget(
+                    const SizedBoxHeight10(),
+                    const TagListWidget(
                       tagContent1: '# 콘센트가 많아요',
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16.0,
                     ),
 
                     // 작업 편의 tab
-                    TagTitle(
-                      title: '작업 편의',
+                    tagTitle(
+                      '작업 편의',
+                      0,
                     ),
-
                     // 작업 편의 tags
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                      child: TagListWidget(
-                        tagContent1: '# 한산해요',
-                        tagContent2: '# 의자가 편해요',
-                        tagContent3: '# 책상이 넓어요',
+                    if (isTagOpen[0]) ...[
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                        child: TagListWidget(
+                          tagContent1: '# 한산해요',
+                          tagContent2: '# 의자가 편해요',
+                          tagContent3: '# 책상이 넓어요',
+                        ),
                       ),
-                    ),
+                    ],
 
                     // 분위기 tab
-                    TagTitle(
-                      title: '분위기',
+                    tagTitle(
+                      '분위기',
+                      1,
                     ),
-
                     // 분위기 tags
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                      child: Column(
-                        children: [
-                          TagListWidget(
-                            tagContent1: '# 뷰가 좋아요',
-                            tagContent2: '# 조용해요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 아늑해요',
-                            tagContent2: '# 인테리어가 깔끔해요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 어두워요',
-                            tagContent2: '# 밝아요',
-                            tagContent3: '# 다시 오고 싶어요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 음악이 좋아요',
-                            tagContent2: '# 대화하기 좋아요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 감각적이에요',
-                            tagContent2: '# 혼자 작업하기 좋아요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 회의하기에 좋아요',
-                          ),
-                        ],
+                    if (isTagOpen[1]) ...[
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                        child: Column(
+                          children: [
+                            TagListWidget(
+                              tagContent1: '# 뷰가 좋아요',
+                              tagContent2: '# 조용해요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 아늑해요',
+                              tagContent2: '# 인테리어가 깔끔해요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 어두워요',
+                              tagContent2: '# 밝아요',
+                              tagContent3: '# 다시 오고 싶어요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 음악이 좋아요',
+                              tagContent2: '# 대화하기 좋아요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 감각적이에요',
+                              tagContent2: '# 혼자 작업하기 좋아요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 회의하기에 좋아요',
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
 
                     // 메뉴 tab
-                    TagTitle(
-                      title: '메뉴',
+                    tagTitle(
+                      '메뉴',
+                      2,
                     ),
-
                     // 메뉴 tags
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                      child: Column(
-                        children: [
-                          TagListWidget(
-                            tagContent1: '# 저렴해요',
-                            tagContent2: '# 매뉴가 다양해요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 커피가 맛있어요',
-                            tagContent2: '# 디저트가 맛있어요',
-                          ),
-                        ],
+                    if (isTagOpen[2]) ...[
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                        child: Column(
+                          children: [
+                            TagListWidget(
+                              tagContent1: '# 저렴해요',
+                              tagContent2: '# 매뉴가 다양해요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 커피가 맛있어요',
+                              tagContent2: '# 디저트가 맛있어요',
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
 
                     // 서비스 tab
-                    TagTitle(
-                      title: '서비스',
+                    tagTitle(
+                      '서비스',
+                      3,
                     ),
-
                     // 서비스 tags
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                      child: Column(
-                        children: [
-                          TagListWidget(
-                            tagContent1: '# 친절해요',
-                            tagContent2: '# 와이파이가 잘 터져요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 에어컨이 잘 나와요',
-                            tagContent2: '# 오래 작업하기 좋아요',
-                          ),
-                        ],
+                    if (isTagOpen[3]) ...[
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                        child: Column(
+                          children: [
+                            TagListWidget(
+                              tagContent1: '# 친절해요',
+                              tagContent2: '# 와이파이가 잘 터져요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 에어컨이 잘 나와요',
+                              tagContent2: '# 오래 작업하기 좋아요',
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
 
                     // 기타 tab
-                    TagTitle(
-                      title: '기타',
+                    tagTitle(
+                      '기타',
+                      4,
                     ),
-
                     // 기타 tags
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-                      child: Column(
-                        children: [
-                          TagListWidget(
-                            tagContent1: '# 화장실이 깨끗해요',
-                            tagContent2: '# 찾아가기 편해요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 무료로 이용이 가능해요',
-                            tagContent2: '# 주차가 가능해요',
-                          ),
-                          SizedBoxHeight10(),
-                          TagListWidget(
-                            tagContent1: '# 24시간 운영이에요',
-                          ),
-                        ],
+                    if (isTagOpen[4]) ...[
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
+                        child: Column(
+                          children: [
+                            TagListWidget(
+                              tagContent1: '# 화장실이 깨끗해요',
+                              tagContent2: '# 찾아가기 편해요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 무료로 이용이 가능해요',
+                              tagContent2: '# 주차가 가능해요',
+                            ),
+                            SizedBoxHeight10(),
+                            TagListWidget(
+                              tagContent1: '# 24시간 운영이에요',
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
 
                     //마지막 여백
-                    SizedBox(
+                    const SizedBox(
                       height: 72.0,
                     )
                   ],
@@ -218,6 +234,34 @@ class EditTag extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget tagTitle(String title, int numberOfTag) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16, //임의 수정
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                isTagOpen[numberOfTag] = !isTagOpen[numberOfTag];
+              });
+            },
+            child: SvgPicture.asset(isTagOpen[numberOfTag]
+                ? 'assets/icons/dropdown_up_padding.svg'
+                : 'assets/icons/dropdown_down_padding.svg'),
+          ),
+        ],
       ),
     );
   }
