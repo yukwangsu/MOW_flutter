@@ -14,13 +14,15 @@ class EditTag extends StatefulWidget {
 }
 
 class _EditTagState extends State<EditTag> {
-  List<bool> isTagOpen = [false, false, false, false, false];
+  List<bool> isTagOpen = [true, true, true, true, true];
   List<String> taggedList = [];
+  List<String> appliedSearchTags = [];
 
   @override
   void initState() {
     super.initState();
-    loadTaggedList(); // 앱 시작 시 태그 리스트를 불러옴
+    loadTaggedList(); // 시작 시 태그 리스트를 불러옴
+    loadAppliedSearchTags(); // 시작 시 검색 태그 불러옴
   }
 
   // 태그 리스트 저장
@@ -43,11 +45,28 @@ class _EditTagState extends State<EditTag> {
     setState(() {
       if (taggedList.contains(tagContent)) {
         taggedList.remove(tagContent);
+        appliedSearchTags.remove(tagContent);
       } else {
         taggedList.add(tagContent);
       }
       // 스토리지에 저장
       saveTaggedList();
+      saveAppliedSearchTags();
+    });
+  }
+
+  // 검색 태그 저장
+  Future<void> saveAppliedSearchTags() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('appliedSearchTags', appliedSearchTags);
+  }
+
+  // 검색 태그 불러오기
+  Future<void> loadAppliedSearchTags() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      appliedSearchTags = prefs.getStringList('appliedSearchTags') ??
+          []; // 저장된 리스트가 없으면 빈 리스트 사용
     });
   }
 

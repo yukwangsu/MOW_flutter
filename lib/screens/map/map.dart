@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/map/edit_tag.dart';
+import 'package:flutter_mow/services/search_service.dart';
 import 'package:flutter_mow/widgets/search_place.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({
@@ -14,12 +16,56 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  // bool isNormalMode = true;
-  // bool isEditMode = false;
   final TextEditingController searchController = TextEditingController();
   String selectedOrder = '거리순'; // Initially set to '거리순'
   int order = 1;
   String locationType = '';
+  List<String> taggedList = [];
+  List<String> appliedSearchTags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadTaggedList(); // 시작 시 태그 리스트 불러옴
+    loadAppliedSearchTags(); // 시작 시 검색 태그 불러옴
+  }
+
+  // 검색 태그 저장
+  Future<void> saveAppliedSearchTags() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('appliedSearchTags', appliedSearchTags);
+  }
+
+  // 검색 태그 불러오기
+  Future<void> loadAppliedSearchTags() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      appliedSearchTags = prefs.getStringList('appliedSearchTags') ??
+          []; // 저장된 리스트가 없으면 빈 리스트 사용
+    });
+  }
+
+  // 검색 태그 수정
+  void toogleAppliedSearchTags(String tagContent) async {
+    if (appliedSearchTags.contains(tagContent)) {
+      appliedSearchTags.remove(tagContent);
+    } else {
+      appliedSearchTags.add(tagContent);
+    }
+    // 스토리지에 저장
+    await saveAppliedSearchTags();
+    // 수정이 완료되면 setState
+    setState(() {});
+  }
+
+  // 태그 리스트 불러오기
+  Future<void> loadTaggedList() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      taggedList =
+          prefs.getStringList('taggedList') ?? []; // 저장된 리스트가 없으면 빈 리스트 사용
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,545 +130,148 @@ class _MapScreenState extends State<MapScreen> {
 
   Widget buildNormalMode() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //bottom sheet 바
         const Bar(),
         const SizedBox(height: 4),
-        //검색창
-        Search(
-          searchController: searchController,
-          order: order,
-          locationType: locationType,
+        //검색창 -> widget으로 변경..?
+        search(
+          searchController,
+          order,
+          locationType,
+          appliedSearchTags,
         ),
         const SizedBox(height: 20),
         //카테고리 선택
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Row(
-            children: [
-              SelectButton(
-                height: 32,
-                padding: 14,
-                bgColor: const Color(0xFFFFFCF8),
-                radius: 1000,
-                text: '편집',
-                textColor: const Color(0xFF6B4D38),
-                textSize: 14.0,
-                borderColor: const Color(0xFFAD7541),
-                borderWidth: 1.0,
-                borderOpacity: 1.0,
-                onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EditTag(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBoxWidth10(),
-              SelectButton(
-                height: 32,
-                padding: 14,
-                bgColor: const Color(0xFFFFFCF8),
-                radius: 1000,
-                text: selectedOrder, // Dynamic button text
-                textColor: const Color(0xFF6B4D38),
-                textSize: 14.0,
-                borderColor: const Color(0xFFAD7541),
-                borderWidth: 1.0,
-                borderOpacity: 0.4,
-                svgIconPath: 'assets/icons/search_place_order_icon.svg',
-                onPress: () {
-                  // ***거리순 클릭시 BottomSheet 올라오게 처리***
-                  showModalBottomSheet(
-                    context: context,
-                    // shape를 사용해서 BorderRadius 설정.
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(25.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                SelectButton(
+                  height: 32,
+                  padding: 14,
+                  bgColor: const Color(0xFFFFFCF8),
+                  radius: 1000,
+                  text: '편집',
+                  textColor: const Color(0xFF6B4D38),
+                  textSize: 14.0,
+                  borderColor: const Color(0xFFAD7541),
+                  borderWidth: 1.0,
+                  borderOpacity: 1.0,
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const EditTag(),
                       ),
-                    ),
-                    builder: (BuildContext context) {
-                      return Container(
-                        height: 180.0,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildOrderList(context, '거리순', 1),
-                            const ListBorderLine(), //bottom sheet 경계선
-                            buildOrderList(context, '별점순', 2),
-                          ],
+                    ).then((_) {
+                      // *** 이 화면으로 돌아왔을 때 loadTaggedList를 호출 ***
+                      loadTaggedList();
+                      loadAppliedSearchTags();
+                    });
+                  },
+                ),
+                const SizedBoxWidth10(),
+                SelectButton(
+                  height: 32,
+                  padding: 14,
+                  bgColor: const Color(0xFFFFFCF8),
+                  radius: 1000,
+                  text: selectedOrder, // Dynamic button text
+                  textColor: const Color(0xFF6B4D38),
+                  textSize: 14.0,
+                  borderColor: const Color(0xFFAD7541),
+                  borderWidth: 1.0,
+                  borderOpacity: 0.4,
+                  svgIconPath: 'assets/icons/search_place_order_icon.svg',
+                  onPress: () {
+                    // ***거리순 클릭시 BottomSheet 올라오게 처리***
+                    showModalBottomSheet(
+                      context: context,
+                      // shape를 사용해서 BorderRadius 설정.
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(25.0),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-              const SizedBoxWidth10(),
-              SelectButton(
-                height: 32,
-                padding: 14,
-                bgColor: const Color(0xFFFFFCF8),
-                radius: 1000,
-                text: locationType.isEmpty ? '공간구분' : locationType,
-                textColor: const Color(0xFF6B4D38),
-                textSize: 14.0,
-                borderColor: const Color(0xFFAD7541),
-                borderWidth: 1.0,
-                borderOpacity: 0.4,
-                svgIconPath: 'assets/icons/down_icon.svg',
-                onPress: () {
-                  showModalBottomSheet(
-                    context: context,
-                    // shape를 사용해서 BorderRadius 설정.
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(25.0),
                       ),
-                    ),
-                    builder: (BuildContext context) {
-                      return Container(
-                        height: 350.0,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildPlaceList(context, '모든 공간'),
-                            const ListBorderLine(), //bottom sheet 경계선
-                            buildPlaceList(context, '카페'),
-                            const ListBorderLine(),
-                            buildPlaceList(context, '도서관'),
-                            const ListBorderLine(),
-                            buildPlaceList(context, '스터디카페'),
-                            const ListBorderLine(),
-                            buildPlaceList(context, '기타 작업 공간'),
-                          ],
+                      builder: (BuildContext context) {
+                        return Container(
+                          height: 180.0,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildOrderList(context, '거리순', 1),
+                              const ListBorderLine(), //bottom sheet 경계선
+                              buildOrderList(context, '별점순', 2),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                const SizedBoxWidth10(),
+                SelectButton(
+                  height: 32,
+                  padding: 14,
+                  bgColor: const Color(0xFFFFFCF8),
+                  radius: 1000,
+                  text: locationType.isEmpty ? '공간구분' : locationType,
+                  textColor: const Color(0xFF6B4D38),
+                  textSize: 14.0,
+                  borderColor: const Color(0xFFAD7541),
+                  borderWidth: 1.0,
+                  borderOpacity: 0.4,
+                  svgIconPath: 'assets/icons/down_icon.svg',
+                  onPress: () {
+                    showModalBottomSheet(
+                      context: context,
+                      // shape를 사용해서 BorderRadius 설정.
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(25.0),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
+                      ),
+                      builder: (BuildContext context) {
+                        return Container(
+                          height: 350.0,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildPlaceList(context, '모든 공간'),
+                              const ListBorderLine(), //bottom sheet 경계선
+                              buildPlaceList(context, '카페'),
+                              const ListBorderLine(),
+                              buildPlaceList(context, '도서관'),
+                              const ListBorderLine(),
+                              buildPlaceList(context, '스터디카페'),
+                              const ListBorderLine(),
+                              buildPlaceList(context, '기타 작업 공간'),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                for (int n = 0; n < taggedList.length; n++) ...[
+                  const SizedBoxWidth10(),
+                  tagButtonWidget(taggedList[n]),
+                ]
+              ],
+            ),
           ),
         ),
       ],
     );
   }
-
-  // Widget buildEditMode() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         //bottom sheet 바
-  //         const Row(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: [
-  //             Bar(),
-  //           ],
-  //         ),
-  //         const SizedBox(height: 4),
-  //         const SizedBoxHeight10(),
-  //         Column(
-  //           //돌아가기 아이콘
-  //           children: [
-  //             GestureDetector(
-  //               onTap: () {
-  //                 setState(() {
-  //                   isNormalMode = true;
-  //                   isEditMode = false;
-  //                 });
-  //               },
-  //               child: SvgPicture.asset('assets/icons/back_icon.svg'),
-  //             ),
-  //           ],
-  //         ),
-  //         // 스크롤 시작 부분 *** 실패 ***
-  //         SingleChildScrollView(
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               const SizedBox(
-  //                 height: 28.0,
-  //               ),
-  //               const Padding(
-  //                 padding: EdgeInsets.symmetric(horizontal: 4.0),
-  //                 child: Row(
-  //                   children: [
-  //                     Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: [
-  //                         Text(
-  //                           '태그 편집',
-  //                           style: TextStyle(
-  //                             fontSize: 22,
-  //                             fontWeight: FontWeight.bold,
-  //                           ),
-  //                         ),
-  //                         SizedBox(
-  //                           height: 12.0,
-  //                         ),
-  //                         Text(
-  //                           '검색에 이용할 태그들을 선택해주세요!',
-  //                           style: TextStyle(
-  //                             fontSize: 16,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               const SizedBox(
-  //                 height: 48.0,
-  //               ),
-  //               const Row(
-  //                 children: [
-  //                   Expanded(
-  //                     child: SingleChildScrollView(
-  //                       scrollDirection: Axis.horizontal,
-  //                       child: Row(
-  //                         children: [
-  //                           SelectButtonWidget(
-  //                             textContent: '# 공간이 넓어요',
-  //                           ),
-  //                           //버튼 사이 빈 공간
-  //                           SizedBoxWidth6(),
-  //                           SelectButtonWidget(
-  //                             textContent: '# 좌석이 많아요',
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //               const SizedBoxHeight10(),
-  //               const Row(
-  //                 children: [
-  //                   SelectButtonWidget(
-  //                     textContent: '# 콘센트가 많아요',
-  //                   ),
-  //                 ],
-  //               ),
-  //               const SizedBox(
-  //                 height: 16.0,
-  //               ),
-  //               // 작업 편의 tab
-  //               Padding(
-  //                 padding: const EdgeInsets.only(
-  //                     top: 12.0, bottom: 12.0, right: 12.0),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     const Text(
-  //                       '작업 편의',
-  //                       style: TextStyle(
-  //                         fontSize: 16, //임의 수정
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 작업 편의 tags
-  //               const Padding(
-  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-  //                 child: Column(
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         Expanded(
-  //                           child: SingleChildScrollView(
-  //                             scrollDirection: Axis.horizontal,
-  //                             child: Row(
-  //                               children: [
-  //                                 SelectButtonWidget(
-  //                                   textContent: '# 한산해요',
-  //                                 ),
-  //                                 SizedBoxWidth6(),
-  //                                 SelectButtonWidget(
-  //                                   textContent: '# 의자가 편해요',
-  //                                 ),
-  //                                 SizedBoxWidth6(),
-  //                                 SelectButtonWidget(
-  //                                   textContent: '# 책상이 넓어요',
-  //                                 ),
-  //                               ],
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 분위기 tab
-  //               Padding(
-  //                 padding: const EdgeInsets.only(
-  //                     top: 12.0, bottom: 12.0, right: 12.0),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     const Text(
-  //                       '분위기',
-  //                       style: TextStyle(
-  //                         fontSize: 16, //임의 수정
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 분위기 tags
-  //               const Padding(
-  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-  //                 child: Column(
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 뷰가 좋아요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 조용해요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 아늑해요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 인테리어가 깔끔해요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 어두워요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 밝아요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 다시 오고 싶어요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 음악이 좋아요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 대화하기 좋아요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 감각적이에요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 혼자 작업하기 좋아요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 회의하기에 좋아요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 메뉴 tab
-  //               Padding(
-  //                 padding: const EdgeInsets.only(
-  //                     top: 12.0, bottom: 12.0, right: 12.0),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     const Text(
-  //                       '메뉴',
-  //                       style: TextStyle(
-  //                         fontSize: 16, //임의 수정
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 메뉴 tags
-  //               const Padding(
-  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-  //                 child: Column(
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 저렴해요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 매뉴가 다양해요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 커피가 맛있어요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 디저트가 맛있어요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 서비스 tab
-  //               Padding(
-  //                 padding: const EdgeInsets.only(
-  //                     top: 12.0, bottom: 12.0, right: 12.0),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     const Text(
-  //                       '서비스',
-  //                       style: TextStyle(
-  //                         fontSize: 16, //임의 수정
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 서비스 tags
-  //               const Padding(
-  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-  //                 child: Column(
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 친절해요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 와이파이가 잘 터져요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 에어컨이 잘 나와요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 오래 작업하기 좋아요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 기타 tab
-  //               Padding(
-  //                 padding: const EdgeInsets.only(
-  //                     top: 12.0, bottom: 12.0, right: 12.0),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     const Text(
-  //                       '기타',
-  //                       style: TextStyle(
-  //                         fontSize: 16, //임의 수정
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                     SvgPicture.asset('assets/icons/dropdown_up.svg'),
-  //                   ],
-  //                 ),
-  //               ),
-  //               // 기타 tags
-  //               const Padding(
-  //                 padding: EdgeInsets.only(top: 8.0, bottom: 24.0),
-  //                 child: Column(
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 화장실이 깨끗해요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 찾아가기 편해요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 무료로 이용이 가능해요',
-  //                         ),
-  //                         SizedBoxWidth6(),
-  //                         SelectButtonWidget(
-  //                           textContent: '# 주차가 가능해요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBoxHeight10(),
-  //                     Row(
-  //                       children: [
-  //                         SelectButtonWidget(
-  //                           textContent: '# 24시간 운영이에요',
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget buildOrderList(
       BuildContext context, String listContent, int orderContent) {
@@ -672,30 +321,124 @@ class _MapScreenState extends State<MapScreen> {
       },
     );
   }
-}
 
-class SelectButtonWidget extends StatelessWidget {
-  const SelectButtonWidget({
-    super.key,
-    required this.textContent,
-  });
+  Widget search(
+    TextEditingController searchController,
+    int order,
+    String locationType,
+    List<String> appliedSearchTags,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: searchPlace(
+              const Color(0xFF6B4D38),
+              searchController,
+              order,
+              locationType,
+              appliedSearchTags,
+            ),
+          ),
+          const SizedBox(
+            width: 8,
+          ),
+          SvgPicture.asset('assets/icons/circle_icon.svg'),
+        ],
+      ),
+    );
+  }
 
-  final String textContent;
+  //Widget SearchPlace
+  Widget searchPlace(
+    Color borderColor,
+    TextEditingController controller, //입력값 controller
+    int order,
+    String locationType,
+    List<String> appliedSearchTags,
+  ) {
+    //화면이 build되는 순간 데이터를 가져옴
+    Future<List<dynamic>?> result = SearchService.searchPlace(
+      controller.text,
+      order,
+      locationType,
+      appliedSearchTags,
+    );
+    print('----------rebuild search result----------');
+    print('result: $result');
+    print('your keyword: ${controller.text}');
+    print('your order: $order');
 
-  @override
-  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 38.0,
+      child: TextField(
+        controller: controller, //입력값 controller
+        cursorColor: Colors.black, // 커서 색깔
+        decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: borderColor,
+              width: 1, // 테두리 두께 설정
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: borderColor, // 클릭 시 색상 변경(없음)
+              width: 1, // 테두리 두께 설정
+            ),
+            borderRadius: BorderRadius.circular(12), // 테두리 모서리 둥글게 설정
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          //아이콘 추가
+          suffixIcon: GestureDetector(
+            onTap: () async {
+              //await 필수
+              List<dynamic>? result = await SearchService.searchPlace(
+                controller.text,
+                order,
+                locationType,
+                appliedSearchTags,
+              );
+              print('----------searchButton search result----------');
+              print('result: $result');
+              print('your keyword: ${controller.text}');
+              print('your order: $order');
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(7.0),
+              child: SvgPicture.asset(
+                'assets/icons/search_icon.svg',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget tagButtonWidget(String tagName) {
     return SelectButton(
       height: 32.0,
       padding: 14.0,
-      bgColor: Colors.white,
+      bgColor: appliedSearchTags.contains(tagName)
+          ? const Color(0xFF6B4D38)
+          : Colors.white,
       radius: 1000,
-      text: textContent,
-      textColor: const Color(0xFF6B4D38),
+      text: tagName,
+      textColor: appliedSearchTags.contains(tagName)
+          ? Colors.white
+          : const Color(0xFF6B4D38),
       textSize: 14.0,
-      borderWidth: 1.0,
-      borderColor: const Color(0xFFAD7541),
-      borderOpacity: 0.4,
-      onPress: () {},
+      borderWidth: appliedSearchTags.contains(tagName) ? null : 1.0,
+      borderColor:
+          appliedSearchTags.contains(tagName) ? null : const Color(0xFFAD7541),
+      borderOpacity: appliedSearchTags.contains(tagName) ? null : 0.4,
+      onPress: () {
+        toogleAppliedSearchTags(tagName);
+      },
     );
   }
 }
@@ -756,41 +499,41 @@ class SizedBoxWidth6 extends StatelessWidget {
   }
 }
 
-class Search extends StatelessWidget {
-  const Search({
-    super.key,
-    required this.searchController,
-    required this.order,
-    required this.locationType,
-  });
+// class Search extends StatelessWidget {
+//   const Search({
+//     super.key,
+//     required this.searchController,
+//     required this.order,
+//     required this.locationType,
+//   });
 
-  final TextEditingController searchController;
-  final int order;
-  final String locationType;
+//   final TextEditingController searchController;
+//   final int order;
+//   final String locationType;
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: SearchPlace(
-              borderColor: const Color(0xFF6B4D38),
-              controller: searchController,
-              order: order,
-              locationType: locationType,
-            ),
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          SvgPicture.asset('assets/icons/circle_icon.svg'),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//       child: Row(
+//         children: [
+//           Expanded(
+//             child: SearchPlace(
+//               borderColor: const Color(0xFF6B4D38),
+//               controller: searchController,
+//               order: order,
+//               locationType: locationType,
+//             ),
+//           ),
+//           const SizedBox(
+//             width: 8,
+//           ),
+//           SvgPicture.asset('assets/icons/circle_icon.svg'),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class Bar extends StatelessWidget {
   const Bar({
@@ -799,16 +542,21 @@ class Bar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Container(
-        width: 50,
-        height: 6,
-        decoration: BoxDecoration(
-          color: const Color(0xFF8A5E34),
-          borderRadius: BorderRadius.circular(1000.0),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Container(
+            width: 50,
+            height: 6,
+            decoration: BoxDecoration(
+              color: const Color(0xFF8A5E34),
+              borderRadius: BorderRadius.circular(1000.0),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

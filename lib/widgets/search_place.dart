@@ -7,6 +7,7 @@ class SearchPlace extends StatefulWidget {
   final TextEditingController controller; //입력값 controller
   final int order;
   final String locationType;
+  final List<String> appliedSearchTags;
 
   const SearchPlace({
     super.key,
@@ -14,6 +15,7 @@ class SearchPlace extends StatefulWidget {
     required this.controller,
     required this.order,
     required this.locationType,
+    required this.appliedSearchTags,
   });
 
   @override
@@ -25,11 +27,16 @@ class _SearchPlaceState extends State<SearchPlace> {
   Widget build(BuildContext context) {
     //화면이 build되는 순간 데이터를 가져옴
     Future<List<dynamic>?> result = SearchService.searchPlace(
-        widget.controller.text, widget.order, widget.locationType);
-    print('----------search result----------');
+      widget.controller.text,
+      widget.order,
+      widget.locationType,
+      widget.appliedSearchTags,
+    );
+    print('----------rebuild search result----------');
     print('result: $result');
     print('your keyword: ${widget.controller.text}');
     print('your order: ${widget.order}');
+
     return SizedBox(
       height: 38.0,
       child: TextField(
@@ -56,9 +63,13 @@ class _SearchPlaceState extends State<SearchPlace> {
           suffixIcon: GestureDetector(
             onTap: () async {
               //await 필수
-              List? result = await SearchService.searchPlace(
-                  widget.controller.text, widget.order, widget.locationType);
-              print('----------search result----------');
+              List<dynamic>? result = await SearchService.searchPlace(
+                widget.controller.text,
+                widget.order,
+                widget.locationType,
+                widget.appliedSearchTags,
+              );
+              print('----------searchButton search result----------');
               print('result: $result');
               print('your keyword: ${widget.controller.text}');
               print('your order: ${widget.order}');

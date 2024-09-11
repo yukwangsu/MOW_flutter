@@ -3,7 +3,11 @@ import 'dart:convert';
 
 class SearchService {
   static Future<List?> searchPlace(
-      String keyword, int order, String locationType) async {
+    String keyword,
+    int order,
+    String locationType,
+    List<String> appliedSearchTags,
+  ) async {
     final url = Uri.parse(
         'http://ec2-15-164-159-42.ap-northeast-2.compute.amazonaws.com:8082/workspace?order=$order&page=0&size=20');
     var headers = {
@@ -20,9 +24,10 @@ class SearchService {
     var body = jsonEncode(data);
     try {
       final response = await http.post(url, headers: headers, body: body);
-      print('----------search place----------');
+      print('----------[service] search place----------');
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
+      print('*** appliedSearchTags: $appliedSearchTags');
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final responseData = json.decode(response.body);
