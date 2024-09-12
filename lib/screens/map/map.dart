@@ -134,15 +134,12 @@ class _MapScreenState extends State<MapScreen> {
         //bottom sheet 바
         const Bar(),
         const SizedBox(height: 4),
-        //검색창 -> widget으로 변경..?
-        search(
+        //검색창
+        searchBar(
           searchController,
-          order,
-          locationType,
-          appliedSearchTags,
         ),
         const SizedBox(height: 20),
-        //카테고리 선택
+        //카테고리, 태그 선택
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: SingleChildScrollView(
@@ -268,7 +265,205 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
+        const SizedBox(
+          height: 20.0,
+        ),
+        //[임시]
+        // placeList('영등포 도서관', '도서관', 4.3, 23, '서울 영등포구 영등포로', 281.5),
+        showWorkspace(
+          searchController,
+          order,
+          locationType,
+          appliedSearchTags,
+        ),
       ],
+    );
+  }
+
+  Widget showWorkspace(
+    TextEditingController controller, // 입력값 controller
+    int order,
+    String locationType,
+    List<String> appliedSearchTags,
+  ) {
+    return FutureBuilder<List<dynamic>?>(
+      future: SearchService.searchPlace(
+        controller.text,
+        order,
+        locationType,
+        appliedSearchTags,
+      ), // 비동기 데이터 호출
+      builder: (BuildContext context, AsyncSnapshot<List<dynamic>?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // 데이터가 로드 중일 때 로딩 표시
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // 오류가 발생했을 때
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // 데이터가 성공적으로 로드되었을 때
+          final workspaceList = snapshot.data;
+          print('----------rebuild showWorkspace search result----------');
+          print('workspaceList: $workspaceList');
+          print('your keyword: ${controller.text}');
+          print('your order: $order');
+
+          return Column(
+            children: [
+              for (int i = 0; i < workspaceList!.length; i++) ...[
+                placeList(
+                  workspaceList[i]['workspaceName'],
+                  workspaceList[i]['workspaceType'],
+                  workspaceList[i]['starscore'],
+                  workspaceList[i]['reviewCnt'],
+                  workspaceList[i]['location'],
+                  workspaceList[i]['distance'],
+                )
+              ],
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget placeList(
+    String name,
+    String category,
+    double score,
+    int reviewCnt,
+    String address,
+    double distance,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          // place list
+          Column(
+            children: [
+              Row(
+                children: [
+                  //가게 이미지
+                  Container(
+                    decoration: const BoxDecoration(color: Colors.black),
+                    width: 80.0,
+                    height: 80.0,
+                  ),
+                  const SizedBox(
+                    width: 14.0,
+                  ),
+                  //가게 정보
+                  Expanded(
+                    child: Column(
+                      children: [
+                        //가게 정보 첫번째 줄: 이름, 카테고리
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                //가게 이름
+                                Text(
+                                  name.length > 10 //가게 이름 크기 제한
+                                      ? '${name.substring(0, 10)}...'
+                                      : name,
+                                  // name,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                const SizedBoxWidth10(),
+                                //가게 카테고리
+                                Text(
+                                  category.length > 8 //가게 카테고리 크기 제한
+                                      ? '${category.substring(0, 8)}...'
+                                      : category,
+                                  // category,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall!
+                                      .copyWith(color: const Color(0xFFC3C3C3)),
+                                ),
+                              ],
+                            ),
+                            SvgPicture.asset('assets/icons/unsave_icon.svg'),
+                          ],
+                        ),
+                        const SizedBox(height: 4.0),
+                        // 가게 정보 두번째 줄: 별점, 리뷰
+                        Row(
+                          children: [
+                            // 별점
+                            for (int i = 0; i < score.round(); i++) ...[
+                              SvgPicture.asset(
+                                  'assets/icons/star_fill_icon.svg'),
+                            ],
+                            for (int i = 0; i < 5 - score.round(); i++) ...[
+                              SvgPicture.asset(
+                                  'assets/icons/star_unfill_icon.svg'),
+                            ],
+                            const SizedBox(
+                              width: 8.0,
+                            ),
+                            // 리뷰 개수
+                            Text(
+                              '($reviewCnt)',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12.0),
+                        // 가게 정보 세번째 줄: 위치, 거리, 연락처
+                        Row(
+                          children: [
+                            // 주소
+                            Text(
+                              address.substring(0, 7),
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(
+                              width: 4.0,
+                            ),
+                            SvgPicture.asset(
+                                'assets/icons/dropdown_down_padding.svg'),
+                            const SizedBox(
+                              width: 4.0,
+                            ),
+                            // 거리
+                            Text(
+                              '${distance.round()}m',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(
+                              width: 16.0,
+                            ),
+                            Text(
+                              '연락처',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(
+                              width: 4.0,
+                            ),
+                            SvgPicture.asset(
+                                'assets/icons/dropdown_down_padding.svg'),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              //list padding
+              const SizedBox(
+                height: 24.0,
+              ),
+              const ListBorderLine(),
+              const SizedBox(
+                height: 24.0,
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -321,23 +516,17 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget search(
+  Widget searchBar(
     TextEditingController searchController,
-    int order,
-    String locationType,
-    List<String> appliedSearchTags,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
           Expanded(
-            child: searchPlace(
+            child: searchBox(
               const Color(0xFF6B4D38),
               searchController,
-              order,
-              locationType,
-              appliedSearchTags,
             ),
           ),
           const SizedBox(
@@ -349,77 +538,48 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  //Widget SearchPlace
-  Widget searchPlace(
+  //검색창
+  Widget searchBox(
     Color borderColor,
     TextEditingController controller, // 입력값 controller
-    int order,
-    String locationType,
-    List<String> appliedSearchTags,
   ) {
     return SizedBox(
       height: 38.0,
-      //FutureBuilder를 사용하여 데이터를 로드함
-      child: FutureBuilder<List<dynamic>?>(
-        future: SearchService.searchPlace(
-          controller.text,
-          order,
-          locationType,
-          appliedSearchTags,
-        ), // 비동기 데이터 호출
-        builder:
-            (BuildContext context, AsyncSnapshot<List<dynamic>?> snapshot) {
-          // 데이터가 성공적으로 로드되었을 때
-          final result = snapshot.data;
-          print('----------rebuild search result----------');
-          print('result: $result');
-          print('your keyword: ${controller.text}');
-          print('your order: $order');
-
-          return TextField(
-            controller: controller, // 입력값 controller
-            cursorColor: Colors.black, // 커서 색깔
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: borderColor,
-                  width: 1, // 테두리 두께 설정
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: borderColor, // 클릭 시 색상 변경
-                  width: 1, // 테두리 두께 설정
-                ),
-                borderRadius: BorderRadius.circular(12), // 테두리 모서리 둥글게 설정
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              // 아이콘 추가
-              suffixIcon: GestureDetector(
-                onTap: () async {
-                  List<dynamic>? result = await SearchService.searchPlace(
-                    controller.text,
-                    order,
-                    locationType,
-                    appliedSearchTags,
-                  );
-                  print('----------searchButton search result----------');
-                  print('result: $result');
-                  print('your keyword: ${controller.text}');
-                  print('your order: $order');
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(7.0),
-                  child: SvgPicture.asset(
-                    'assets/icons/search_icon.svg',
-                  ),
-                ),
+      // *** FutureBuilder를 사용하여 데이터를 로드함 ***
+      child: TextField(
+        controller: controller, // 입력값 controller
+        cursorColor: Colors.black, // 커서 색깔
+        decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: borderColor,
+              width: 1, // 테두리 두께 설정
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: borderColor, // 클릭 시 색상 변경
+              width: 1, // 테두리 두께 설정
+            ),
+            borderRadius: BorderRadius.circular(12), // 테두리 모서리 둥글게 설정
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          // 아이콘 추가
+          suffixIcon: GestureDetector(
+            onTap: () async {
+              // 돋보기 클릭시 setState를 통해 workspace를 다시 불러온다.
+              setState(() {});
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(7.0),
+              child: SvgPicture.asset(
+                'assets/icons/search_icon.svg',
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -465,6 +625,19 @@ class ListBorderLine extends StatelessWidget {
   }
 }
 
+class SizedBoxHeight24 extends StatelessWidget {
+  const SizedBoxHeight24({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 24.0,
+    );
+  }
+}
+
 class SizedBoxWidth10 extends StatelessWidget {
   const SizedBoxWidth10({
     super.key,
@@ -503,42 +676,6 @@ class SizedBoxWidth6 extends StatelessWidget {
     );
   }
 }
-
-// class Search extends StatelessWidget {
-//   const Search({
-//     super.key,
-//     required this.searchController,
-//     required this.order,
-//     required this.locationType,
-//   });
-
-//   final TextEditingController searchController;
-//   final int order;
-//   final String locationType;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//       child: Row(
-//         children: [
-//           Expanded(
-//             child: SearchPlace(
-//               borderColor: const Color(0xFF6B4D38),
-//               controller: searchController,
-//               order: order,
-//               locationType: locationType,
-//             ),
-//           ),
-//           const SizedBox(
-//             width: 8,
-//           ),
-//           SvgPicture.asset('assets/icons/circle_icon.svg'),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class Bar extends StatelessWidget {
   const Bar({

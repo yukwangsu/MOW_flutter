@@ -10,8 +10,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SplashScreen(),
+    return MaterialApp(
+      home: const SplashScreen(),
+      theme: ThemeData(
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'SF_Pro',
+            height: 1.2,
+          ),
+          titleSmall: TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.normal,
+            fontFamily: 'SF_Pro',
+            height: 1.2,
+          ),
+        ),
+      ),
     );
   }
 }
