@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/map/edit_tag.dart';
 import 'package:flutter_mow/services/search_service.dart';
-import 'package:flutter_mow/widgets/search_place.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -353,68 +352,74 @@ class _MapScreenState extends State<MapScreen> {
   //Widget SearchPlace
   Widget searchPlace(
     Color borderColor,
-    TextEditingController controller, //입력값 controller
+    TextEditingController controller, // 입력값 controller
     int order,
     String locationType,
     List<String> appliedSearchTags,
   ) {
-    //화면이 build되는 순간 데이터를 가져옴
-    Future<List<dynamic>?> result = SearchService.searchPlace(
-      controller.text,
-      order,
-      locationType,
-      appliedSearchTags,
-    );
-    print('----------rebuild search result----------');
-    print('result: $result');
-    print('your keyword: ${controller.text}');
-    print('your order: $order');
-
     return SizedBox(
       height: 38.0,
-      child: TextField(
-        controller: controller, //입력값 controller
-        cursorColor: Colors.black, // 커서 색깔
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: borderColor,
-              width: 1, // 테두리 두께 설정
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: borderColor, // 클릭 시 색상 변경(없음)
-              width: 1, // 테두리 두께 설정
-            ),
-            borderRadius: BorderRadius.circular(12), // 테두리 모서리 둥글게 설정
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          //아이콘 추가
-          suffixIcon: GestureDetector(
-            onTap: () async {
-              //await 필수
-              List<dynamic>? result = await SearchService.searchPlace(
-                controller.text,
-                order,
-                locationType,
-                appliedSearchTags,
-              );
-              print('----------searchButton search result----------');
-              print('result: $result');
-              print('your keyword: ${controller.text}');
-              print('your order: $order');
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(7.0),
-              child: SvgPicture.asset(
-                'assets/icons/search_icon.svg',
+      //FutureBuilder를 사용하여 데이터를 로드함
+      child: FutureBuilder<List<dynamic>?>(
+        future: SearchService.searchPlace(
+          controller.text,
+          order,
+          locationType,
+          appliedSearchTags,
+        ), // 비동기 데이터 호출
+        builder:
+            (BuildContext context, AsyncSnapshot<List<dynamic>?> snapshot) {
+          // 데이터가 성공적으로 로드되었을 때
+          final result = snapshot.data;
+          print('----------rebuild search result----------');
+          print('result: $result');
+          print('your keyword: ${controller.text}');
+          print('your order: $order');
+
+          return TextField(
+            controller: controller, // 입력값 controller
+            cursorColor: Colors.black, // 커서 색깔
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: borderColor,
+                  width: 1, // 테두리 두께 설정
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: borderColor, // 클릭 시 색상 변경
+                  width: 1, // 테두리 두께 설정
+                ),
+                borderRadius: BorderRadius.circular(12), // 테두리 모서리 둥글게 설정
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              // 아이콘 추가
+              suffixIcon: GestureDetector(
+                onTap: () async {
+                  List<dynamic>? result = await SearchService.searchPlace(
+                    controller.text,
+                    order,
+                    locationType,
+                    appliedSearchTags,
+                  );
+                  print('----------searchButton search result----------');
+                  print('result: $result');
+                  print('your keyword: ${controller.text}');
+                  print('your order: $order');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(7.0),
+                  child: SvgPicture.asset(
+                    'assets/icons/search_icon.svg',
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

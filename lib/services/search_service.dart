@@ -27,6 +27,7 @@ class SearchService {
       print('----------[service] search place----------');
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
+      // 추후에 data로 이동
       print('*** appliedSearchTags: $appliedSearchTags');
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
