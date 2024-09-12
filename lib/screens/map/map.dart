@@ -112,13 +112,15 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ],
                 ),
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.only(top: 4.0),
-                  children: [
-                    buildNormalMode(),
-                  ],
-                ),
+                // 스크롤 수정?
+                // child: ListView(
+                //   controller: scrollController,
+                //   padding: const EdgeInsets.only(top: 4.0),
+                //   children: [
+                //     buildNormalMode(),
+                //   ],
+                // ),
+                child: buildNormalMode(scrollController),
               );
             },
           ),
@@ -127,160 +129,179 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget buildNormalMode() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildNormalMode(ScrollController scrollController) {
+    return Stack(
       children: [
-        //bottom sheet 바
-        const Bar(),
-        const SizedBox(height: 4),
-        //검색창
-        searchBar(
-          searchController,
-        ),
-        const SizedBox(height: 20),
-        //카테고리, 태그 선택
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                SelectButton(
-                  height: 32,
-                  padding: 14,
-                  bgColor: const Color(0xFFFFFCF8),
-                  radius: 1000,
-                  text: '편집',
-                  textColor: const Color(0xFF6B4D38),
-                  textSize: 14.0,
-                  borderColor: const Color(0xFFAD7541),
-                  borderWidth: 1.0,
-                  borderOpacity: 1.0,
-                  onPress: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const EditTag(),
+        Positioned(
+          top: 0.0,
+          left: 0.0,
+          right: 0.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              //bottom sheet 바
+              const SizedBox(height: 4),
+              const Bar(),
+              const SizedBox(height: 4),
+              //검색창
+              searchBar(
+                searchController,
+              ),
+              const SizedBox(height: 20),
+              //카테고리, 태그 선택
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      SelectButton(
+                        height: 32,
+                        padding: 14,
+                        bgColor: const Color(0xFFFFFCF8),
+                        radius: 1000,
+                        text: '편집',
+                        textColor: const Color(0xFF6B4D38),
+                        textSize: 14.0,
+                        borderColor: const Color(0xFFAD7541),
+                        borderWidth: 1.0,
+                        borderOpacity: 1.0,
+                        onPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditTag(),
+                            ),
+                          ).then((_) {
+                            // *** 이 화면으로 돌아왔을 때 loadTaggedList를 호출 ***
+                            loadTaggedList();
+                            loadAppliedSearchTags();
+                          });
+                        },
                       ),
-                    ).then((_) {
-                      // *** 이 화면으로 돌아왔을 때 loadTaggedList를 호출 ***
-                      loadTaggedList();
-                      loadAppliedSearchTags();
-                    });
-                  },
-                ),
-                const SizedBoxWidth10(),
-                SelectButton(
-                  height: 32,
-                  padding: 14,
-                  bgColor: const Color(0xFFFFFCF8),
-                  radius: 1000,
-                  text: selectedOrder, // Dynamic button text
-                  textColor: const Color(0xFF6B4D38),
-                  textSize: 14.0,
-                  borderColor: const Color(0xFFAD7541),
-                  borderWidth: 1.0,
-                  borderOpacity: 0.4,
-                  svgIconPath: 'assets/icons/search_place_order_icon.svg',
-                  onPress: () {
-                    // ***거리순 클릭시 BottomSheet 올라오게 처리***
-                    showModalBottomSheet(
-                      context: context,
-                      // shape를 사용해서 BorderRadius 설정.
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(25.0),
-                        ),
+                      const SizedBoxWidth10(),
+                      SelectButton(
+                        height: 32,
+                        padding: 14,
+                        bgColor: const Color(0xFFFFFCF8),
+                        radius: 1000,
+                        text: selectedOrder, // Dynamic button text
+                        textColor: const Color(0xFF6B4D38),
+                        textSize: 14.0,
+                        borderColor: const Color(0xFFAD7541),
+                        borderWidth: 1.0,
+                        borderOpacity: 0.4,
+                        svgIconPath: 'assets/icons/search_place_order_icon.svg',
+                        onPress: () {
+                          // ***거리순 클릭시 BottomSheet 올라오게 처리***
+                          showModalBottomSheet(
+                            context: context,
+                            // shape를 사용해서 BorderRadius 설정.
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25.0),
+                              ),
+                            ),
+                            builder: (BuildContext context) {
+                              return Container(
+                                height: 180.0,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 20.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    buildOrderList(context, '거리순', 1),
+                                    const ListBorderLine(), //bottom sheet 경계선
+                                    buildOrderList(context, '별점순', 2),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
-                      builder: (BuildContext context) {
-                        return Container(
-                          height: 180.0,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              buildOrderList(context, '거리순', 1),
-                              const ListBorderLine(), //bottom sheet 경계선
-                              buildOrderList(context, '별점순', 2),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-                const SizedBoxWidth10(),
-                SelectButton(
-                  height: 32,
-                  padding: 14,
-                  bgColor: const Color(0xFFFFFCF8),
-                  radius: 1000,
-                  text: locationType.isEmpty ? '공간구분' : locationType,
-                  textColor: const Color(0xFF6B4D38),
-                  textSize: 14.0,
-                  borderColor: const Color(0xFFAD7541),
-                  borderWidth: 1.0,
-                  borderOpacity: 0.4,
-                  svgIconPath: 'assets/icons/down_icon.svg',
-                  onPress: () {
-                    showModalBottomSheet(
-                      context: context,
-                      // shape를 사용해서 BorderRadius 설정.
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(25.0),
-                        ),
+                      const SizedBoxWidth10(),
+                      SelectButton(
+                        height: 32,
+                        padding: 14,
+                        bgColor: const Color(0xFFFFFCF8),
+                        radius: 1000,
+                        text: locationType.isEmpty ? '공간구분' : locationType,
+                        textColor: const Color(0xFF6B4D38),
+                        textSize: 14.0,
+                        borderColor: const Color(0xFFAD7541),
+                        borderWidth: 1.0,
+                        borderOpacity: 0.4,
+                        svgIconPath: 'assets/icons/down_icon.svg',
+                        onPress: () {
+                          showModalBottomSheet(
+                            context: context,
+                            // shape를 사용해서 BorderRadius 설정.
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25.0),
+                              ),
+                            ),
+                            builder: (BuildContext context) {
+                              return Container(
+                                height: 350.0,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 20.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    buildPlaceList(context, '모든 공간'),
+                                    const ListBorderLine(), //bottom sheet 경계선
+                                    buildPlaceList(context, '카페'),
+                                    const ListBorderLine(),
+                                    buildPlaceList(context, '도서관'),
+                                    const ListBorderLine(),
+                                    buildPlaceList(context, '스터디카페'),
+                                    const ListBorderLine(),
+                                    buildPlaceList(context, '기타 작업 공간'),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
-                      builder: (BuildContext context) {
-                        return Container(
-                          height: 350.0,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              buildPlaceList(context, '모든 공간'),
-                              const ListBorderLine(), //bottom sheet 경계선
-                              buildPlaceList(context, '카페'),
-                              const ListBorderLine(),
-                              buildPlaceList(context, '도서관'),
-                              const ListBorderLine(),
-                              buildPlaceList(context, '스터디카페'),
-                              const ListBorderLine(),
-                              buildPlaceList(context, '기타 작업 공간'),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
+                      for (int n = 0; n < taggedList.length; n++) ...[
+                        const SizedBoxWidth10(),
+                        tagButtonWidget(taggedList[n]),
+                      ]
+                    ],
+                  ),
                 ),
-                for (int n = 0; n < taggedList.length; n++) ...[
-                  const SizedBoxWidth10(),
-                  tagButtonWidget(taggedList[n]),
-                ]
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+            ],
           ),
-        ),
-        const SizedBox(
-          height: 20.0,
         ),
         //[임시]
         // placeList('영등포 도서관', '도서관', 4.3, 23, '서울 영등포구 영등포로', 281.5),
-        showWorkspace(
-          searchController,
-          order,
-          locationType,
-          appliedSearchTags,
+
+        //작업공간 보여주기
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 114.0,
+          ),
+          child: showWorkspace(
+            scrollController,
+            searchController,
+            order,
+            locationType,
+            appliedSearchTags,
+          ),
         ),
       ],
     );
   }
 
   Widget showWorkspace(
+    ScrollController scrollController,
     TextEditingController controller, // 입력값 controller
     int order,
     String locationType,
@@ -296,7 +317,18 @@ class _MapScreenState extends State<MapScreen> {
       builder: (BuildContext context, AsyncSnapshot<List<dynamic>?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // 데이터가 로드 중일 때 로딩 표시
-          return const CircularProgressIndicator();
+          return const Column(
+            children: [
+              SizedBox(
+                height: 20.0,
+              ),
+              Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFAD7541),
+                ),
+              ),
+            ],
+          );
         } else if (snapshot.hasError) {
           // 오류가 발생했을 때
           return Text('Error: ${snapshot.error}');
@@ -308,19 +340,28 @@ class _MapScreenState extends State<MapScreen> {
           print('your keyword: ${controller.text}');
           print('your order: $order');
 
-          return Column(
-            children: [
-              for (int i = 0; i < workspaceList!.length; i++) ...[
-                placeList(
-                  workspaceList[i]['workspaceName'],
-                  workspaceList[i]['workspaceType'],
-                  workspaceList[i]['starscore'],
-                  workspaceList[i]['reviewCnt'],
-                  workspaceList[i]['location'],
-                  workspaceList[i]['distance'],
-                )
-              ],
-            ],
+          // 데이터가 없을 경우 처리
+          if (workspaceList == null || workspaceList.isEmpty) {
+            return const Center(
+              child: Text('No workspaces found.'),
+            );
+          }
+
+          // *** ListView.builder로 변경 ***
+          return ListView.builder(
+            controller: scrollController, // 외부 스크롤 컨트롤러 사용
+            physics: const BouncingScrollPhysics(), // ListView 자체 스크롤 비활성화
+            itemCount: workspaceList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return placeList(
+                workspaceList[index]['workspaceName'],
+                workspaceList[index]['workspaceType'],
+                workspaceList[index]['starscore'],
+                workspaceList[index]['reviewCnt'],
+                workspaceList[index]['location'],
+                workspaceList[index]['distance'],
+              );
+            },
           );
         }
       },
