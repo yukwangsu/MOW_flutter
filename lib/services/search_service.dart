@@ -22,16 +22,20 @@ class SearchService {
             "workspaceType": [locationType],
           };
     var body = jsonEncode(data);
+
     try {
       final response = await http.post(url, headers: headers, body: body);
       print('----------[service] search place----------');
       print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
       // 추후에 data로 이동
       print('*** appliedSearchTags: $appliedSearchTags');
 
+      // UTF-8로 응답을 수동 디코딩
+      final utf8Body = utf8.decode(response.bodyBytes);
+      print('Response body: $utf8Body');
+
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        final responseData = json.decode(response.body);
+        final responseData = json.decode(utf8Body);
         List workspaces = responseData['workspaceDtoList'];
         return workspaces;
       } else {
