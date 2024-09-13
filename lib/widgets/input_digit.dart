@@ -26,6 +26,7 @@ class InputDigit extends StatelessWidget {
         cursorColor: Colors.black, // 커서 색깔
         obscureText: obscureText, // 항상 보이게 하는가, 안 보이게 하는가
         keyboardType: TextInputType.number, // 숫자 키보드 타입
+        style: Theme.of(context).textTheme.bodyMedium,
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.digitsOnly, // 숫자만 입력 가능하게
         ],
@@ -46,13 +47,12 @@ class InputDigit extends StatelessWidget {
           ),
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.never, // 라벨이 떠오르지 않게 설정
-          labelStyle: TextStyle(
-            color: labelColor, // 라벨 색상 설정
-            fontFamily: 'SF_Pro',
-            fontSize: 16,
-          ),
+          labelStyle: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(color: labelColor),
           contentPadding:
-              const EdgeInsets.symmetric(vertical: 15, horizontal: 22),
+              const EdgeInsets.symmetric(vertical: 16.5, horizontal: 20),
           isDense: true,
         ),
       ),

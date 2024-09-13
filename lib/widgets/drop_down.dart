@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_mow/widgets/input_text.dart';
+import 'package:flutter_svg/svg.dart';
 
 class DropDown extends StatefulWidget {
   final TextEditingController controller;
@@ -11,84 +11,148 @@ class DropDown extends StatefulWidget {
   });
 
   @override
-  _DropDownState createState() => _DropDownState();
+  State<DropDown> createState() => _DropDownState();
 }
 
 class _DropDownState extends State<DropDown> {
   //초기값 = '직장인'
-  String _selectedValue = '직장인';
-  bool _isDropdownOpened = false;
+  String selectedValue = '직장인';
+  final List<String> jobList = [
+    '대학생',
+    '직장인',
+    '디자이너',
+    '개발자',
+    '직접입력',
+  ];
+  bool isOpen = false;
+  bool dropdownMode = true;
+  bool inputMode = false;
 
   @override
   void initState() {
     super.initState();
-    //기본값을 '직장인'으로 설정
-    widget.controller.text = _selectedValue;
+    widget.controller.text = selectedValue;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(
-          color: const Color(0xFFCCD1DD),
-          width: 2.0,
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton2<String>(
-          value: _selectedValue,
-          icon: SvgPicture.asset(
-            _isDropdownOpened
-                ? 'assets/icons/dropdown_up.svg'
-                : 'assets/icons/dropdown_down.svg',
-          ),
-          isExpanded: true,
-          buttonPadding: const EdgeInsets.only(left: 4.0, right: 16.0),
-          dropdownMaxHeight: 260,
-          dropdownDecoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: const Color(0xFFCCD1DD),
-              width: 2.0,
+    return Column(
+      children: [
+        // dropdown mode
+        if (dropdownMode)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 27.0),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isOpen = !isOpen;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color(0xFFCCD1DD),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.only(
+                      left: 20.0,
+                      right: 14.0,
+                      top: 13.5,
+                      bottom: 13.5,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          height: 21.0,
+                          child: Text(
+                            selectedValue,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                        SvgPicture.asset(
+                          isOpen
+                              ? 'assets/icons/dropdown_up_padding.svg'
+                              : 'assets/icons/dropdown_down_padding.svg',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 4.0,
+                ),
+                if (isOpen)
+                  Container(
+                    padding: const EdgeInsets.only(
+                      top: 9.0,
+                      bottom: 9.0,
+                      left: 18.0,
+                      right: 31.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color(0xFFCCD1DD),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < jobList.length; i++) ...[
+                          GestureDetector(
+                            behavior:
+                                HitTestBehavior.opaque, // *** 빈 공간까지 터치 감지 ***
+                            onTap: () {
+                              setState(() {
+                                if (jobList[i] == '직접입력') {
+                                  selectedValue = '';
+                                  widget.controller.text = '';
+                                  isOpen = !isOpen;
+                                  dropdownMode = false;
+                                  inputMode = true;
+                                } else {
+                                  selectedValue = jobList[i];
+                                  widget.controller.text = selectedValue;
+                                  isOpen = !isOpen;
+                                }
+                              });
+                            },
+                            child: SizedBox(
+                              height: 41.0,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    jobList[i],
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  )
+              ],
             ),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(12.0),
-            ),
-            boxShadow: const [],
           ),
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'SF_Pro',
-            color: Colors.black,
+        if (inputMode)
+          InputText(
+            label: '직접입력',
+            labelColor: const Color(0xFFC3C3C3),
+            borderColor: const Color(0xFFCCD1DD),
+            obscureText: false,
+            controller: widget.controller,
           ),
-          items: <String>['대학생', '직장인', '디자이너', '개발자', '기타']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0.0),
-                child: Text(value),
-              ),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedValue = newValue!;
-              widget.controller.text = _selectedValue;
-            });
-          },
-          //현재 dropdown이 열여있는지 닫혀있는지 확인
-          onMenuStateChange: (bool isOpen) {
-            setState(() {
-              _isDropdownOpened = isOpen;
-            });
-          },
-        ),
-      ),
+      ],
     );
   }
 }

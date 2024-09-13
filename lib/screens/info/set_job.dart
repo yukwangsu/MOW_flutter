@@ -56,11 +56,8 @@ class SetJob extends StatelessWidget {
               const SizedBox(
                 height: 60,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 27),
-                child: DropDown(
-                  controller: jobController,
-                ),
+              DropDown(
+                controller: jobController,
               ),
             ],
           ),

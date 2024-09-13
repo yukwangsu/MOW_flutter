@@ -60,7 +60,11 @@ class _Input4digitState extends State<Input4digit> {
                   FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
                 }
               },
-              style: const TextStyle(fontSize: 52), // 글자 크기 설정
+              style: const TextStyle(
+                fontSize: 52,
+                fontWeight: FontWeight.normal,
+                height: 1.0,
+              ), // 글자 크기 설정
               textAlign: TextAlign.center, // 글자 가로 정렬
               textAlignVertical: TextAlignVertical.center, // 글자 세로 정렬
               decoration: InputDecoration(
@@ -79,7 +83,7 @@ class _Input4digitState extends State<Input4digit> {
                   borderRadius: BorderRadius.circular(12), // 테두리 모서리 둥글게 설정
                 ),
                 contentPadding:
-                    const EdgeInsets.symmetric(vertical: 16), // 패딩 조정
+                    const EdgeInsets.symmetric(vertical: 18), // 패딩 조정
                 isDense: true,
               ),
             ),

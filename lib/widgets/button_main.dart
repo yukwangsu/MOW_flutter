@@ -37,7 +37,7 @@ class ButtonMain extends StatelessWidget {
               ),
               elevation: 0, // Remove the shadow
               padding: const EdgeInsets.symmetric(
-                vertical: 14,
+                vertical: 12.5,
                 horizontal: 80,
               ),
             ),

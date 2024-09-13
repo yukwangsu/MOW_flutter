@@ -22,6 +22,7 @@ class InputBottom extends StatelessWidget {
       controller: controller, //입력값 controller
       cursorColor: Colors.black, //커서 색깔
       obscureText: obscureText, // 항상보이게 하는가, 안보이게 하는가
+      style: Theme.of(context).textTheme.bodyMedium,
       decoration: InputDecoration(
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
@@ -35,11 +36,9 @@ class InputBottom extends StatelessWidget {
         ),
         labelText: label,
         floatingLabelBehavior: FloatingLabelBehavior.never, // 라벨이 떠오르지 않게 설정
-        labelStyle: TextStyle(
-          color: labelColor, // 라벨 색상 설정
-          fontFamily: 'SF_Pro',
-          fontSize: 16,
-        ),
+        labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: labelColor,
+            ),
         contentPadding: const EdgeInsets.only(left: 4, right: 4, bottom: 10),
         isDense: true,
       ),
