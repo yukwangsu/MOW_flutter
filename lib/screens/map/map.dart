@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/map/edit_tag.dart';
 import 'package:flutter_mow/services/search_service.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/svg.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
@@ -15,6 +17,11 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  late double screenHeight;
+  late double screenWidth;
+  // late double latitude; // 현 위치
+  // late double longitude; // 현 위치
+  // bool isLoadingMap = true;
   double bottomSheetHeight = 134; // 초기 높이 (134픽셀)
   double minbottomSheetHeight = 134; // 최소 높이 (134픽셀)
   final TextEditingController searchController = TextEditingController();
@@ -36,11 +43,12 @@ class _MapScreenState extends State<MapScreen> {
     searchFocusNode.addListener(() {
       if (searchFocusNode.hasFocus) {
         reloadWorkspaces = false;
-        //키보드가 올라와있기 때문에 최소 높이를 450으로 설정
-        minbottomSheetHeight = 450;
-        if (bottomSheetHeight < 450) {
+        //키보드가 올라와있기 때문에 최소 높이를 screenHeight*0.5 으로 설정
+        minbottomSheetHeight = screenHeight * 0.5;
+        if (bottomSheetHeight < screenHeight * 0.5) {
           setState(() {
-            bottomSheetHeight = 450; // 키보드가 나타났을 때 bottomSheetHeight 조정
+            bottomSheetHeight =
+                screenHeight * 0.5; // 키보드가 나타났을 때 bottomSheetHeight 조정
           });
         }
       } // TextField에 포커스가 풀렸을 때
@@ -53,6 +61,7 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
     });
+    // getCurrentLocation();
   }
 
   @override
@@ -102,27 +111,72 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  // Future<void> getCurrentLocation() async {
+  //   Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high);
+  //   print('**********position: $position ***********');
+  // }
+
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height; //화면 높이
+    screenHeight = MediaQuery.of(context).size.height; //화면 높이
+    screenWidth = MediaQuery.of(context).size.width; //화면 넓이
     return Scaffold(
       resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
       backgroundColor: Colors.lightGreen,
       body: Stack(
         children: [
           //추후 지도 화면으로 수정 필요
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset('assets/icons/login_cat.svg'),
-                const SizedBox(
-                  height: 30,
-                ),
-                const Text('지도 준비중 ...')
-              ],
+          // Center(
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       SvgPicture.asset('assets/icons/login_cat.svg'),
+          //       const SizedBox(
+          //         height: 30,
+          //       ),
+          //       const Text('지도 준비중 ...')
+          //     ],
+          //   ),
+          // ),
+
+          NaverMap(
+            options: const NaverMapViewOptions(
+              rotationGesturesEnable: false, // 지도 회전 금지
+              scrollGesturesFriction: 0.5, // 마찰계수
+              zoomGesturesFriction: 0.5, // 마찰계수
+              //줌 제한 (커질수록 더 자세히 보임)
+              minZoom: 12, // default is 0
+              maxZoom: 17, // default is 21
+              // 지도 영역을 대한민국 인근으로 제한
+              extent: NLatLngBounds(
+                southWest: NLatLng(31.43, 122.37),
+                northEast: NLatLng(38.35, 132.0),
+              ),
+              // 지도에 표시되는 언어를 영어로 제한
+              locale: Locale('ko'),
+              // 현위치로 이동하는 버튼 활성화
+              locationButtonEnable: true,
             ),
+            onMapReady: (controller) {
+              print("네이버 맵 로딩됨!");
+            },
           ),
+
+          // NaverMap(
+          //   options: const NaverMapViewOptions(
+          //     indoorEnable: true, // 실내 맵 사용 가능 여부 설정
+          //     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
+          //     consumeSymbolTapEvents: false, // 심볼 탭 이벤트 소비 여부 설정
+          //   ),
+          //   onMapReady: (controller) async {
+          //     // 지도 준비 완료 시 호출되는 콜백 함수
+          //     mapControllerCompleter
+          //         .complete(controller); // Completer에 지도 컨트롤러 완료 신호 전송
+          //     print("onMapReady");
+          //   },
+          // ),
+
           // 변경 후
           Positioned(
             left: 0,
@@ -162,13 +216,12 @@ class _MapScreenState extends State<MapScreen> {
                   ],
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //스크롤되지 않는 부분(바, 검색창, 버튼)
                     Column(
                       children: [
-                        const SizedBox(height: 4),
                         const Bar(),
-                        const SizedBox(height: 4),
                         //검색창
                         searchBar(
                           searchController,
@@ -176,7 +229,13 @@ class _MapScreenState extends State<MapScreen> {
                         const SizedBox(height: 20),
                         //카테고리, 태그 선택
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: EdgeInsets.only(
+                            left: 10.0,
+                            // tag가 없을 경우 '카테고리, 태그 선택' Row가 가운데에 오는 것을 방지하고자 padding을 늘리고
+                            // tag가 있다면 다시 padding을 줄임.
+                            right:
+                                taggedList.isEmpty ? screenWidth - 281.0 : 10.0,
+                          ),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
@@ -796,7 +855,7 @@ class Bar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Container(
             width: 50,
             height: 6,

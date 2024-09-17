@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mow/screens/splash/splash_screen.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NaverMapSdk.instance.initialize(
+      clientId: '',
+      onAuthFailed: (ex) {
+        print("********* 네이버맵 인증오류 : $ex *********");
+      });
   runApp(const MyApp());
 }
 
