@@ -4,7 +4,8 @@ import 'package:flutter_mow/services/search_service.dart';
 import 'package:flutter_mow/widgets/select_button.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/svg.dart';
-// import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
@@ -23,7 +24,7 @@ class _MapScreenState extends State<MapScreen> {
   // late double longitude; // 현 위치
   // bool isLoadingMap = true;
   double bottomSheetHeight = 134; // 초기 높이 (134픽셀)
-  double minbottomSheetHeight = 134; // 최소 높이 (134픽셀)
+  double minbottomSheetHeight = 10; // 최소 높이 (134픽셀)
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode(); // 포커스 노드 추가
   String selectedOrder = '거리순'; // Initially set to '거리순'
@@ -61,7 +62,8 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
     });
-    // getCurrentLocation();
+    // locationPermission();
+    getCurrentLocation();
   }
 
   @override
@@ -111,11 +113,30 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  // Future<void> getCurrentLocation() async {
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high);
-  //   print('**********position: $position ***********');
+  // // 위치 권한 요청하기
+  // void locationPermission() async {
+  //   var requestStatus = await Permission.location.request();
+  //   var status = await Permission.location.status;
+  //   if (requestStatus.isPermanentlyDenied || status.isPermanentlyDenied) {
+  //     openAppSettings();
+  //   }
   // }
+
+  // 현위치 가져오기 (이상함)
+  Future<Position> getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('permissions are denied');
+      }
+    }
+    Position position = await Geolocator.getCurrentPosition();
+    // *** 추후에 위치 정보를 변수에 저장해야함. ***
+    print('********latitude: ${position.latitude}');
+    print('********longitude: ${position.longitude}');
+    return position;
+  }
 
   @override
   Widget build(BuildContext context) {
