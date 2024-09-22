@@ -18,22 +18,23 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  late double screenHeight;
-  late double screenWidth;
-  // late double latitude; // 현 위치
-  // late double longitude; // 현 위치
-  // bool isLoadingMap = true;
+  late double screenHeight; // 화면 높이 저장
+  late double screenWidth; // 화면 넓이 저장
+  late double latitude; // 현 위치 위도
+  late double longitude; // 현 위치 경도
+  bool isLoadingMap = true; // 지도가 로딩중인지 기록
   double bottomSheetHeight = 134; // 초기 높이 (134픽셀)
-  double minbottomSheetHeight = 10; // 최소 높이 (134픽셀)
+  double minbottomSheetHeight = 134; // 최소 높이 (134픽셀)
   final TextEditingController searchController = TextEditingController();
-  final FocusNode searchFocusNode = FocusNode(); // 포커스 노드 추가
-  String selectedOrder = '거리순'; // Initially set to '거리순'
+  final FocusNode searchFocusNode = FocusNode(); // 포커스 노드 추가, 가게 이름으로 검색 중인지 확인
+  String selectedOrder = '거리순'; // 초기 정렬 기준: '거리순'
   int order = 1;
   String locationType = '';
   List<String> taggedList = [];
   List<String> appliedSearchTags = [];
   bool reloadWorkspaces = true;
   List<dynamic>? copyWorkspaceList = [];
+  String bottomsheetMode = 'normal';
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
     });
-    // locationPermission();
+    // 위치 정보 가져오기
     getCurrentLocation();
   }
 
@@ -122,7 +123,7 @@ class _MapScreenState extends State<MapScreen> {
   //   }
   // }
 
-  // 현위치 가져오기 (이상함)
+  // 현위치 가져오기 (좌표가 이상할 경우 -> 신촌으로 고정)
   Future<Position> getCurrentLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -133,8 +134,13 @@ class _MapScreenState extends State<MapScreen> {
     }
     Position position = await Geolocator.getCurrentPosition();
     // *** 추후에 위치 정보를 변수에 저장해야함. ***
+    latitude = position.longitude < 0 ? 37.5583605 : position.latitude;
+    longitude = position.longitude < 0 ? 126.9368894 : position.longitude;
     print('********latitude: ${position.latitude}');
     print('********longitude: ${position.longitude}');
+    isLoadingMap = false;
+    reloadWorkspaces = false;
+    setState(() {});
     return position;
   }
 
@@ -144,61 +150,75 @@ class _MapScreenState extends State<MapScreen> {
     screenWidth = MediaQuery.of(context).size.width; //화면 넓이
     return Scaffold(
       resizeToAvoidBottomInset: false, //키보드가 올라와도 화면이 그대로 유지
-      backgroundColor: Colors.lightGreen,
+      backgroundColor: const Color.fromARGB(255, 231, 215, 199),
       body: Stack(
         children: [
-          //추후 지도 화면으로 수정 필요
-          // Center(
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       SvgPicture.asset('assets/icons/login_cat.svg'),
-          //       const SizedBox(
-          //         height: 30,
-          //       ),
-          //       const Text('지도 준비중 ...')
-          //     ],
-          //   ),
-          // ),
-
-          NaverMap(
-            options: const NaverMapViewOptions(
-              rotationGesturesEnable: false, // 지도 회전 금지
-              scrollGesturesFriction: 0.5, // 마찰계수
-              zoomGesturesFriction: 0.5, // 마찰계수
-              //줌 제한 (커질수록 더 자세히 보임)
-              minZoom: 12, // default is 0
-              maxZoom: 17, // default is 21
-              // 지도 영역을 대한민국 인근으로 제한
-              extent: NLatLngBounds(
-                southWest: NLatLng(31.43, 122.37),
-                northEast: NLatLng(38.35, 132.0),
+          // 지도 로딩중 화면
+          if (isLoadingMap)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 100.0,
+                    width: 100.0,
+                    child: SvgPicture.asset('assets/icons/login_cat.svg'),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '지도 준비중...',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                        width: 20.0,
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              // 지도에 표시되는 언어를 영어로 제한
-              locale: Locale('ko'),
-              // 현위치로 이동하는 버튼 활성화
-              locationButtonEnable: true,
             ),
-            onMapReady: (controller) {
-              print("네이버 맵 로딩됨!");
-            },
-          ),
+          // 지도 로딩이 끝났을 때 화면
+          if (!isLoadingMap)
+            NaverMap(
+              options: NaverMapViewOptions(
+                initialCameraPosition: NCameraPosition(
+                  target: NLatLng(latitude, longitude),
+                  zoom: 15,
+                ),
+                rotationGesturesEnable: false, // 지도 회전 금지
+                scrollGesturesFriction: 0.5, // 마찰계수
+                zoomGesturesFriction: 0.5, // 마찰계수
+                //줌 제한 (커질수록 더 자세히 보임)
+                minZoom: 12, // default is 0
+                maxZoom: 17, // default is 21
+                // 지도 영역을 대한민국 인근으로 제한
+                extent: const NLatLngBounds(
+                  southWest: NLatLng(31.43, 122.37),
+                  northEast: NLatLng(38.35, 132.0),
+                ),
+                // 지도에 표시되는 언어를 영어로 제한
+                locale: const Locale('ko'),
+                // 현위치로 이동하는 버튼 비/활성화
+                locationButtonEnable: false,
+              ),
+              onMapReady: (controller) {
+                print("네이버 맵 로딩됨!");
+              },
+            ),
 
-          // NaverMap(
-          //   options: const NaverMapViewOptions(
-          //     indoorEnable: true, // 실내 맵 사용 가능 여부 설정
-          //     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
-          //     consumeSymbolTapEvents: false, // 심볼 탭 이벤트 소비 여부 설정
-          //   ),
-          //   onMapReady: (controller) async {
-          //     // 지도 준비 완료 시 호출되는 콜백 함수
-          //     mapControllerCompleter
-          //         .complete(controller); // Completer에 지도 컨트롤러 완료 신호 전송
-          //     print("onMapReady");
-          //   },
-          // ),
-
-          // 변경 후
+          // bottomsheet
           Positioned(
             left: 0,
             right: 0,
@@ -236,206 +256,400 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //스크롤되지 않는 부분(바, 검색창, 버튼)
-                    Column(
-                      children: [
-                        const Bar(),
-                        //검색창
-                        searchBar(
-                          searchController,
-                        ),
-                        const SizedBox(height: 20),
-                        //카테고리, 태그 선택
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 10.0,
-                            // tag가 없을 경우 '카테고리, 태그 선택' Row가 가운데에 오는 것을 방지하고자 padding을 늘리고
-                            // tag가 있다면 다시 padding을 줄임.
-                            right:
-                                taggedList.isEmpty ? screenWidth - 281.0 : 10.0,
-                          ),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                SelectButton(
-                                  height: 32,
-                                  padding: 14,
-                                  bgColor: const Color(0xFFFFFCF8),
-                                  radius: 1000,
-                                  text: '편집',
-                                  textColor: const Color(0xFF6B4D38),
-                                  textSize: 14.0,
-                                  borderColor: const Color(0xFFAD7541),
-                                  borderWidth: 1.0,
-                                  borderOpacity: 1.0,
-                                  onPress: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const EditTag(),
-                                      ),
-                                    ).then((_) {
-                                      // *** 이 화면으로 돌아왔을 때 loadTaggedList를 호출 ***
-                                      loadTaggedList();
-                                      loadAppliedSearchTags();
-                                    });
-                                  },
-                                ),
-                                const SizedBoxWidth10(),
-                                SelectButton(
-                                  height: 32,
-                                  padding: 14,
-                                  bgColor: const Color(0xFFFFFCF8),
-                                  radius: 1000,
-                                  text: selectedOrder, // Dynamic button text
-                                  textColor: const Color(0xFF6B4D38),
-                                  textSize: 14.0,
-                                  borderColor: const Color(0xFFAD7541),
-                                  borderWidth: 1.0,
-                                  borderOpacity: 0.4,
-                                  svgIconPath:
-                                      'assets/icons/search_place_order_icon.svg',
-                                  onPress: () {
-                                    // ***거리순 클릭시 BottomSheet 올라오게 처리***
-                                    showModalBottomSheet(
-                                      context: context,
-                                      // shape를 사용해서 BorderRadius 설정.
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      builder: (BuildContext context) {
-                                        return Container(
-                                          height: 180.0,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20.0, vertical: 20.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              buildOrderList(context, '거리순', 1),
-                                              const ListBorderLine(), //bottom sheet 경계선
-                                              buildOrderList(context, '별점순', 2),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                                const SizedBoxWidth10(),
-                                SelectButton(
-                                  height: 32,
-                                  padding: 14,
-                                  bgColor: const Color(0xFFFFFCF8),
-                                  radius: 1000,
-                                  text: locationType.isEmpty
-                                      ? '공간구분'
-                                      : locationType,
-                                  textColor: const Color(0xFF6B4D38),
-                                  textSize: 14.0,
-                                  borderColor: const Color(0xFFAD7541),
-                                  borderWidth: 1.0,
-                                  borderOpacity: 0.4,
-                                  svgIconPath: 'assets/icons/down_icon.svg',
-                                  onPress: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      // shape를 사용해서 BorderRadius 설정.
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      builder: (BuildContext context) {
-                                        return Container(
-                                          height: 350.0,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20.0, vertical: 20.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              buildPlaceList(context, '모든 공간'),
-                                              const ListBorderLine(), //bottom sheet 경계선
-                                              buildPlaceList(context, '카페'),
-                                              const ListBorderLine(),
-                                              buildPlaceList(context, '도서관'),
-                                              const ListBorderLine(),
-                                              buildPlaceList(context, '스터디카페'),
-                                              const ListBorderLine(),
-                                              buildPlaceList(
-                                                  context, '기타 작업공간'),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                                // tag 버튼
-                                for (int n = 0; n < taggedList.length; n++) ...[
-                                  const SizedBoxWidth10(),
-                                  tagButtonWidget(taggedList[n]),
-                                ]
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20.0,
-                        ),
-                      ],
-                    ),
-                    // 스크롤되는 부분(장소 리스트)
-                    // Expanded(
-                    //   child: ListView.builder(
-                    //     itemCount: 30,
-                    //     itemBuilder: (context, index) {
-                    //       return ListTile(
-                    //         title: Text('Item $index'),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
-                    // 1. 장소를 reload하는 setstate 일 경우 showWorkspace 진행
-                    if (reloadWorkspaces)
-                      showWorkspace(
-                        searchController,
-                        order,
-                        locationType,
-                        appliedSearchTags,
-                      ),
-                    // 2. bottomsheet을 올리는 setstate 일 경우 (복사본 데이터 사용)
-                    if (!reloadWorkspaces)
-                      Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.only(top: 0.0),
-                          itemCount: copyWorkspaceList!.length,
-                          itemBuilder: (context, index) {
-                            return placeList(
-                              copyWorkspaceList?[index]['workspaceName'],
-                              copyWorkspaceList?[index]['workspaceType'],
-                              copyWorkspaceList?[index]['starscore'],
-                              copyWorkspaceList?[index]['reviewCnt'],
-                              copyWorkspaceList?[index]['location'],
-                              copyWorkspaceList?[index]['distance'],
-                            );
-                          },
-                        ),
-                      )
-                  ],
-                ),
+                // 모드에 따라 bottomsheet가 변함
+                child: bottomsheetMode == 'normal'
+                    ? normalMode()
+                    : bottomsheetMode == 'detail'
+                        ? detailMode()
+                        : normalMode(),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget normalMode() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        //스크롤되지 않는 부분(바, 검색창, 버튼)
+        Column(
+          children: [
+            const Bar(),
+            //검색창
+            searchBar(
+              searchController,
+            ),
+            const SizedBox(height: 20),
+            //카테고리, 태그 선택
+            Padding(
+              padding: EdgeInsets.only(
+                left: 10.0,
+                // tag가 없을 경우 '카테고리, 태그 선택' Row가 가운데에 오는 것을 방지하고자 padding을 늘리고
+                // tag가 있다면 다시 padding을 줄임.
+                right: taggedList.isEmpty ? screenWidth - 281.0 : 10.0,
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SelectButton(
+                      height: 32,
+                      padding: 14,
+                      bgColor: const Color(0xFFFFFCF8),
+                      radius: 1000,
+                      text: '편집',
+                      textColor: const Color(0xFF6B4D38),
+                      textSize: 14.0,
+                      borderColor: const Color(0xFFAD7541),
+                      borderWidth: 1.0,
+                      borderOpacity: 1.0,
+                      onPress: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const EditTag(),
+                          ),
+                        ).then((_) {
+                          // *** 이 화면으로 돌아왔을 때 loadTaggedList를 호출 ***
+                          loadTaggedList();
+                          loadAppliedSearchTags();
+                        });
+                      },
+                    ),
+                    const SizedBoxWidth10(),
+                    SelectButton(
+                      height: 32,
+                      padding: 14,
+                      bgColor: const Color(0xFFFFFCF8),
+                      radius: 1000,
+                      text: selectedOrder, // Dynamic button text
+                      textColor: const Color(0xFF6B4D38),
+                      textSize: 14.0,
+                      borderColor: const Color(0xFFAD7541),
+                      borderWidth: 1.0,
+                      borderOpacity: 0.4,
+                      svgIconPath: 'assets/icons/search_place_order_icon.svg',
+                      onPress: () {
+                        // ***거리순 클릭시 BottomSheet 올라오게 처리***
+                        showModalBottomSheet(
+                          context: context,
+                          // shape를 사용해서 BorderRadius 설정.
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(25.0),
+                            ),
+                          ),
+                          builder: (BuildContext context) {
+                            return Container(
+                              height: 180.0,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0, vertical: 20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  buildOrderList(context, '거리순', 1),
+                                  const ListBorderLine(), //bottom sheet 경계선
+                                  buildOrderList(context, '별점순', 2),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBoxWidth10(),
+                    SelectButton(
+                      height: 32,
+                      padding: 14,
+                      bgColor: const Color(0xFFFFFCF8),
+                      radius: 1000,
+                      text: locationType.isEmpty ? '공간구분' : locationType,
+                      textColor: const Color(0xFF6B4D38),
+                      textSize: 14.0,
+                      borderColor: const Color(0xFFAD7541),
+                      borderWidth: 1.0,
+                      borderOpacity: 0.4,
+                      svgIconPath: 'assets/icons/down_icon.svg',
+                      onPress: () {
+                        showModalBottomSheet(
+                          context: context,
+                          // shape를 사용해서 BorderRadius 설정.
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(25.0),
+                            ),
+                          ),
+                          builder: (BuildContext context) {
+                            return Container(
+                              height: 350.0,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0, vertical: 20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  buildPlaceList(context, '모든 공간'),
+                                  const ListBorderLine(), //bottom sheet 경계선
+                                  buildPlaceList(context, '카페'),
+                                  const ListBorderLine(),
+                                  buildPlaceList(context, '도서관'),
+                                  const ListBorderLine(),
+                                  buildPlaceList(context, '스터디카페'),
+                                  const ListBorderLine(),
+                                  buildPlaceList(context, '기타 작업공간'),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    // tag 버튼
+                    for (int n = 0; n < taggedList.length; n++) ...[
+                      const SizedBoxWidth10(),
+                      tagButtonWidget(taggedList[n]),
+                    ]
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+          ],
+        ),
+
+        // 스크롤되는 부분(장소 리스트)
+        // 1. 장소를 reload하는 setstate 일 경우 showWorkspace 진행
+        if (reloadWorkspaces)
+          showWorkspace(
+            searchController,
+            order,
+            locationType,
+            appliedSearchTags,
+          ),
+        // 2. bottomsheet을 올리는 setstate 일 경우 (복사본 데이터 사용)
+        if (!reloadWorkspaces)
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 0.0),
+              itemCount: copyWorkspaceList!.length,
+              itemBuilder: (context, index) {
+                return placeList(
+                  copyWorkspaceList?[index]['workspaceId'],
+                  copyWorkspaceList?[index]['workspaceName'],
+                  copyWorkspaceList?[index]['workspaceType'],
+                  copyWorkspaceList?[index]['starscore'],
+                  copyWorkspaceList?[index]['reviewCnt'],
+                  copyWorkspaceList?[index]['location'],
+                  copyWorkspaceList?[index]['distance'],
+                );
+              },
+            ),
+          )
+      ],
+    );
+  }
+
+  Widget detailMode() {
+    return Column(
+      children: [
+        // 스크롤되지 않는 부분[bar, arrow]
+        Column(
+          children: [
+            // 바
+            const Bar(),
+            const SizedBox(
+              height: 4.0,
+            ),
+            // 뒤로가기 아이콘
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        reloadWorkspaces = false;
+                        bottomsheetMode = 'normal';
+                        setState(() {});
+                      },
+                      child: SvgPicture.asset('assets/icons/back_arrow.svg')),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 16.0,
+            )
+          ],
+        ),
+        // 스크롤되는 부분
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.only(top: 0.0),
+            itemCount: 1,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      children: [
+                        // 가게 이름
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '가게 이름',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            SvgPicture.asset('assets/icons/share_icon.svg')
+                          ],
+                        ),
+                        const SizedBox(height: 4.0),
+                        // 가게 별점, 리뷰
+                        Row(
+                          children: [
+                            // 별점
+                            for (int i = 0; i < 4.round(); i++) ...[
+                              SvgPicture.asset(
+                                  'assets/icons/star_fill_icon.svg'),
+                            ],
+                            for (int i = 0; i < 5 - 4.round(); i++) ...[
+                              SvgPicture.asset(
+                                  'assets/icons/star_unfill_icon.svg'),
+                            ],
+                            const SizedBox(
+                              width: 8.0,
+                            ),
+                            // 리뷰 개수
+                            Text(
+                              '(5555)',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12.0),
+                        // 가게 위치, 연락처
+                        Row(
+                          children: [
+                            // 주소
+                            Text(
+                              '서울 서대문구 창천동...'.substring(0, 7),
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBoxWidth4(),
+                            SvgPicture.asset(
+                                'assets/icons/dropdown_down_padding.svg'),
+                            const SizedBox(
+                              width: 58.0,
+                            ),
+                            Text(
+                              '연락처',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBoxWidth4(),
+                            SvgPicture.asset(
+                                'assets/icons/dropdown_down_padding.svg'),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8.0,
+                        ),
+                        // 현재 영업 유무, 영업 시간 등 표시
+                        Row(
+                          children: [
+                            Text(
+                              '영업중',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: const Color(0xFF6B4D38)),
+                            ),
+                            const SizedBoxWidth4(),
+                            Text(
+                              '・',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: const Color(0xFF6B4D38)),
+                            ),
+                            const SizedBoxWidth4(),
+                            Text(
+                              '수 09:00 - 21:00',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: const Color(0xFF6B4D38)),
+                            ),
+                            const SizedBoxWidth4(),
+                            SvgPicture.asset(
+                                'assets/icons/dropdown_down_padding.svg'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
+                  // Top3 태그
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 21.5),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          SelectButton(
+                            height: 37.0,
+                            padding: 8.0,
+                            bgColor: const Color(0xFFFFF8F1),
+                            radius: 12.0,
+                            text: '#콘센트 많아요',
+                            textColor: const Color(0xFF6B4D38),
+                            textSize: 16.0,
+                            onPress: () {},
+                          ),
+                          const SizedBoxWidth6(),
+                          SelectButton(
+                            height: 37.0,
+                            padding: 8.0,
+                            bgColor: const Color(0xFFFFF8F1),
+                            radius: 12.0,
+                            text: '#콘센트 많아요',
+                            textColor: const Color(0xFF6B4D38),
+                            textSize: 16.0,
+                            onPress: () {},
+                          ),
+                          const SizedBoxWidth6(),
+                          SelectButton(
+                            height: 37.0,
+                            padding: 8.0,
+                            bgColor: const Color(0xFFFFF8F1),
+                            radius: 12.0,
+                            text: '#콘센트 많아요',
+                            textColor: const Color(0xFF6B4D38),
+                            textSize: 16.0,
+                            onPress: () {},
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBoxHeight30(),
+                  // 경계선
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: ListBorderLine(),
+                  ),
+                  const SizedBoxHeight30(),
+                ],
+              );
+            },
+          ),
+        )
+      ],
     );
   }
 
@@ -455,7 +669,6 @@ class _MapScreenState extends State<MapScreen> {
       builder: (BuildContext context, AsyncSnapshot<List<dynamic>?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // 데이터가 로드 중일 때 로딩 표시
-          // return const CircularProgressIndicator();
           return Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.only(top: 0.0),
@@ -497,6 +710,7 @@ class _MapScreenState extends State<MapScreen> {
               itemCount: workspaceList!.length,
               itemBuilder: (context, index) {
                 return placeList(
+                  workspaceList[index]['workspaceId'],
                   workspaceList[index]['workspaceName'],
                   workspaceList[index]['workspaceType'],
                   workspaceList[index]['starscore'],
@@ -513,6 +727,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget placeList(
+    int id,
     String name,
     String category,
     double score,
@@ -527,115 +742,121 @@ class _MapScreenState extends State<MapScreen> {
           // place list
           Column(
             children: [
-              Row(
-                children: [
-                  //가게 이미지
-                  Container(
-                    decoration: const BoxDecoration(color: Colors.black),
-                    width: 80.0,
-                    height: 80.0,
-                  ),
-                  const SizedBox(
-                    width: 14.0,
-                  ),
-                  //가게 정보
-                  Expanded(
-                    child: Column(
-                      children: [
-                        //가게 정보 첫번째 줄: 이름, 카테고리
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                //가게 이름
-                                Text(
-                                  name.length > 9 //가게 이름 크기 제한
-                                      ? '${name.substring(0, 9)}...'
-                                      : name,
-                                  // name,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                const SizedBoxWidth10(),
-                                //가게 카테고리
-                                Text(
-                                  category.length > 8 //가게 카테고리 크기 제한
-                                      ? '${category.substring(0, 8)}...'
-                                      : category,
-                                  // category,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(color: const Color(0xFFC3C3C3)),
-                                ),
-                              ],
-                            ),
-                            SvgPicture.asset('assets/icons/unsave_icon.svg'),
-                          ],
-                        ),
-                        const SizedBox(height: 4.0),
-                        // 가게 정보 두번째 줄: 별점, 리뷰
-                        Row(
-                          children: [
-                            // 별점
-                            for (int i = 0; i < score.round(); i++) ...[
-                              SvgPicture.asset(
-                                  'assets/icons/star_fill_icon.svg'),
-                            ],
-                            for (int i = 0; i < 5 - score.round(); i++) ...[
-                              SvgPicture.asset(
-                                  'assets/icons/star_unfill_icon.svg'),
-                            ],
-                            const SizedBox(
-                              width: 8.0,
-                            ),
-                            // 리뷰 개수
-                            Text(
-                              '($reviewCnt)',
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12.0),
-                        // 가게 정보 세번째 줄: 위치, 거리, 연락처
-                        Row(
-                          children: [
-                            // 주소
-                            Text(
-                              address.substring(0, 7),
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            const SizedBox(
-                              width: 4.0,
-                            ),
-                            SvgPicture.asset(
-                                'assets/icons/dropdown_down_padding.svg'),
-                            const SizedBox(
-                              width: 4.0,
-                            ),
-                            // 거리
-                            Text(
-                              '${distance.round()}m',
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            const SizedBox(
-                              width: 16.0,
-                            ),
-                            Text(
-                              '연락처',
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            const SizedBox(
-                              width: 4.0,
-                            ),
-                            SvgPicture.asset(
-                                'assets/icons/dropdown_down_padding.svg'),
-                          ],
-                        )
-                      ],
+              // 장소 클릭시 detail 화면으로 넘어감.
+              GestureDetector(
+                behavior: HitTestBehavior.opaque, // *** 빈 공간까지 터치 감지 ***
+                onTap: () {
+                  bottomsheetMode = 'detail';
+                  reloadWorkspaces = false;
+                  print('workspaceId: $id');
+                  setState(() {});
+                },
+                child: Row(
+                  children: [
+                    //가게 이미지
+                    Container(
+                      decoration: const BoxDecoration(color: Colors.black),
+                      width: 80.0,
+                      height: 80.0,
                     ),
-                  )
-                ],
+                    const SizedBox(
+                      width: 14.0,
+                    ),
+                    //가게 정보
+                    Expanded(
+                      child: Column(
+                        children: [
+                          //가게 정보 첫번째 줄: 이름, 카테고리
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  //가게 이름
+                                  Text(
+                                    name.length > 9 //가게 이름 크기 제한
+                                        ? '${name.substring(0, 9)}...'
+                                        : name,
+                                    // name,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  const SizedBoxWidth10(),
+                                  //가게 카테고리
+                                  Text(
+                                    category.length > 8 //가게 카테고리 크기 제한
+                                        ? '${category.substring(0, 8)}...'
+                                        : category,
+                                    // category,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                            color: const Color(0xFFC3C3C3)),
+                                  ),
+                                ],
+                              ),
+                              SvgPicture.asset('assets/icons/unsave_icon.svg'),
+                            ],
+                          ),
+                          const SizedBox(height: 4.0),
+                          // 가게 정보 두번째 줄: 별점, 리뷰
+                          Row(
+                            children: [
+                              // 별점
+                              for (int i = 0; i < score.round(); i++) ...[
+                                SvgPicture.asset(
+                                    'assets/icons/star_fill_icon.svg'),
+                              ],
+                              for (int i = 0; i < 5 - score.round(); i++) ...[
+                                SvgPicture.asset(
+                                    'assets/icons/star_unfill_icon.svg'),
+                              ],
+                              const SizedBox(
+                                width: 8.0,
+                              ),
+                              // 리뷰 개수
+                              Text(
+                                '($reviewCnt)',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12.0),
+                          // 가게 정보 세번째 줄: 위치, 거리, 연락처
+                          Row(
+                            children: [
+                              // 주소
+                              Text(
+                                address.substring(0, 7),
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              const SizedBoxWidth4(),
+                              SvgPicture.asset(
+                                  'assets/icons/dropdown_down_padding.svg'),
+                              const SizedBoxWidth4(),
+                              // 거리
+                              Text(
+                                '${distance.round()}m',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              const SizedBox(
+                                width: 16.0,
+                              ),
+                              Text(
+                                '연락처',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              const SizedBoxWidth4(),
+                              SvgPicture.asset(
+                                  'assets/icons/dropdown_down_padding.svg'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
               //list padding
               const SizedBox(
@@ -813,6 +1034,19 @@ class ListBorderLine extends StatelessWidget {
   }
 }
 
+class SizedBoxHeight30 extends StatelessWidget {
+  const SizedBoxHeight30({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 30.0,
+    );
+  }
+}
+
 class SizedBoxHeight24 extends StatelessWidget {
   const SizedBoxHeight24({
     super.key,
@@ -861,6 +1095,19 @@ class SizedBoxWidth6 extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       width: 6.0,
+    );
+  }
+}
+
+class SizedBoxWidth4 extends StatelessWidget {
+  const SizedBoxWidth4({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 4.0,
     );
   }
 }
